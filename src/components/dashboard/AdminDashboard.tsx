@@ -119,7 +119,7 @@ export default function AdminDashboard() {
   };
 
   const fetchOrders = async () => {
-    const { data: ordersData, error: ordersError } = await supabase
+    const { data: fetchedOrders, error: ordersError } = await supabase
       .from('orders')
       .select('*')
       .order('created_at', { ascending: false });
@@ -130,7 +130,7 @@ export default function AdminDashboard() {
     }
 
     // Fetch profiles separately
-    const userIds = [...new Set(ordersData?.map(o => o.user_id) || [])];
+    const userIds = [...new Set(fetchedOrders?.map(o => o.user_id) || [])] as string[];
     const { data: profilesData } = await supabase
       .from('profiles')
       .select('id, store_name, email')
@@ -138,7 +138,7 @@ export default function AdminDashboard() {
 
     const profilesMap = new Map(profilesData?.map(p => [p.id, p]) || []);
     
-    const ordersWithProfiles = (ordersData || []).map(order => ({
+    const ordersWithProfiles = (fetchedOrders || []).map(order => ({
       ...order,
       profiles: profilesMap.get(order.user_id) || { store_name: null, email: '' }
     }));
