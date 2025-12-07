@@ -143,22 +143,16 @@ export default function AdminDashboard() {
       profiles: profilesMap.get(order.user_id) || { store_name: null, email: '' }
     }));
 
-    if (ordersError) {
-      toast.error('無法載入訂單');
-      return;
-    }
+    setOrders(ordersWithProfiles);
 
-    const ordersData = data || [];
-    setOrders(ordersData);
-
-    const totalRevenue = ordersData
+    const totalRevenue = ordersWithProfiles
       .filter((o) => o.status === 'completed')
       .reduce((sum, o) => sum + Number(o.total_amount), 0);
-    const pendingOrders = ordersData.filter((o) => o.status === 'pending').length;
+    const pendingOrders = ordersWithProfiles.filter((o) => o.status === 'pending').length;
 
     setStats((prev) => ({
       ...prev,
-      totalOrders: ordersData.length,
+      totalOrders: ordersWithProfiles.length,
       totalRevenue,
       pendingOrders,
     }));
