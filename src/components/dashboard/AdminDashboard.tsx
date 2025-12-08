@@ -11,6 +11,21 @@ import ProductsTab from './admin/ProductsTab';
 import OrdersTab from './admin/OrdersTab';
 import { Product, Order, Stats, ProductFormData } from './admin/types';
 
+const initialProductForm: ProductFormData = {
+  name: '',
+  description: '',
+  price: '',
+  retail_price: '',
+  dealer_price: '',
+  unit: '個',
+  stock: '',
+  category: '',
+  parent_product_id: '',
+  table_title: '',
+  table_row_title: '',
+  table_col_title: '',
+};
+
 export default function AdminDashboard() {
   const { signOut } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
@@ -23,13 +38,7 @@ export default function AdminDashboard() {
   });
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [productForm, setProductForm] = useState<ProductFormData>({
-    name: '',
-    description: '',
-    price: '',
-    unit: '個',
-    stock: '',
-  });
+  const [productForm, setProductForm] = useState<ProductFormData>(initialProductForm);
 
   useEffect(() => {
     fetchProducts();
@@ -91,17 +100,24 @@ export default function AdminDashboard() {
   };
 
   const handleProductSubmit = async () => {
-    if (!productForm.name || !productForm.price) {
-      toast.error('請填寫產品名稱和價格');
+    if (!productForm.name || !productForm.retail_price) {
+      toast.error('請填寫產品名稱和零售價');
       return;
     }
 
     const productData = {
       name: productForm.name.trim(),
       description: productForm.description.trim() || null,
-      price: parseFloat(productForm.price),
+      price: parseFloat(productForm.price) || parseFloat(productForm.retail_price),
+      retail_price: parseFloat(productForm.retail_price),
+      dealer_price: productForm.dealer_price ? parseFloat(productForm.dealer_price) : null,
       unit: productForm.unit,
       stock: parseInt(productForm.stock) || 0,
+      category: productForm.category.trim() || null,
+      parent_product_id: productForm.parent_product_id || null,
+      table_title: productForm.table_title.trim() || null,
+      table_row_title: productForm.table_row_title.trim() || null,
+      table_col_title: productForm.table_col_title.trim() || null,
     };
 
     if (editingProduct) {
@@ -127,7 +143,7 @@ export default function AdminDashboard() {
 
     setIsProductDialogOpen(false);
     setEditingProduct(null);
-    setProductForm({ name: '', description: '', price: '', unit: '個', stock: '' });
+    setProductForm(initialProductForm);
     fetchProducts();
   };
 
@@ -136,9 +152,16 @@ export default function AdminDashboard() {
     setProductForm({
       name: product.name,
       description: product.description || '',
-      price: product.price.toString(),
+      price: product.price?.toString() || '',
+      retail_price: product.retail_price?.toString() || product.price?.toString() || '',
+      dealer_price: product.dealer_price?.toString() || '',
       unit: product.unit,
       stock: product.stock.toString(),
+      category: product.category || '',
+      parent_product_id: product.parent_product_id || '',
+      table_title: product.table_title || '',
+      table_row_title: product.table_row_title || '',
+      table_col_title: product.table_col_title || '',
     });
     setIsProductDialogOpen(true);
   };
@@ -187,7 +210,7 @@ export default function AdminDashboard() {
 
   const handleResetProductForm = () => {
     setEditingProduct(null);
-    setProductForm({ name: '', description: '', price: '', unit: '個', stock: '' });
+    setProductForm(initialProductForm);
   };
 
   return (

@@ -21,7 +21,15 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Product, ProductFormData } from './types';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface ProductsTabProps {
   products: Product[];
@@ -50,6 +58,11 @@ export default function ProductsTab({
   onDelete,
   onToggleStatus,
 }: ProductsTabProps) {
+  // Filter products that can be parent (exclude current editing product)
+  const availableParentProducts = products.filter(
+    (p) => p.id !== editingProduct?.id && !p.parent_product_id
+  );
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -61,62 +74,152 @@ export default function ProductsTab({
               新增產品
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-2xl max-h-[90vh]">
             <DialogHeader>
               <DialogTitle>{editingProduct ? '編輯產品' : '新增產品'}</DialogTitle>
               <DialogDescription>
                 {editingProduct ? '修改產品資訊' : '填寫產品資訊以新增產品'}
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label>產品名稱 *</Label>
-                <Input
-                  value={productForm.name}
-                  onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
-                  placeholder="輸入產品名稱"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>產品描述</Label>
-                <Textarea
-                  value={productForm.description}
-                  onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
-                  placeholder="輸入產品描述"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
+            <ScrollArea className="max-h-[70vh] pr-4">
+              <div className="space-y-4 py-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>產品名稱 *</Label>
+                    <Input
+                      value={productForm.name}
+                      onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
+                      placeholder="輸入產品名稱"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>分類</Label>
+                    <Input
+                      value={productForm.category}
+                      onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
+                      placeholder="輸入分類"
+                    />
+                  </div>
+                </div>
+
                 <div className="space-y-2">
-                  <Label>價格 *</Label>
-                  <Input
-                    type="number"
-                    value={productForm.price}
-                    onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
-                    placeholder="0"
+                  <Label>產品描述</Label>
+                  <Textarea
+                    value={productForm.description}
+                    onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
+                    placeholder="輸入產品描述"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label>單位</Label>
-                  <Input
-                    value={productForm.unit}
-                    onChange={(e) => setProductForm({ ...productForm, unit: e.target.value })}
-                    placeholder="個"
-                  />
+
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label>原價</Label>
+                    <Input
+                      type="number"
+                      value={productForm.price}
+                      onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
+                      placeholder="0"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>零售價 *</Label>
+                    <Input
+                      type="number"
+                      value={productForm.retail_price}
+                      onChange={(e) => setProductForm({ ...productForm, retail_price: e.target.value })}
+                      placeholder="0"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>經銷價</Label>
+                    <Input
+                      type="number"
+                      value={productForm.dealer_price}
+                      onChange={(e) => setProductForm({ ...productForm, dealer_price: e.target.value })}
+                      placeholder="0"
+                    />
+                  </div>
                 </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>單位</Label>
+                    <Input
+                      value={productForm.unit}
+                      onChange={(e) => setProductForm({ ...productForm, unit: e.target.value })}
+                      placeholder="個"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>庫存數量</Label>
+                    <Input
+                      type="number"
+                      value={productForm.stock}
+                      onChange={(e) => setProductForm({ ...productForm, stock: e.target.value })}
+                      placeholder="0"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>主商品</Label>
+                  <Select
+                    value={productForm.parent_product_id || 'none'}
+                    onValueChange={(value) =>
+                      setProductForm({ ...productForm, parent_product_id: value === 'none' ? '' : value })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="選擇主商品（可選）" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">無（獨立商品）</SelectItem>
+                      {availableParentProducts.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="border-t pt-4">
+                  <h4 className="font-medium mb-3">表格式下單設定</h4>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>表格標題 (Table Title)</Label>
+                      <Input
+                        value={productForm.table_title}
+                        onChange={(e) => setProductForm({ ...productForm, table_title: e.target.value })}
+                        placeholder="例：尺寸規格表"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>列標題 (Row Title)</Label>
+                        <Input
+                          value={productForm.table_row_title}
+                          onChange={(e) => setProductForm({ ...productForm, table_row_title: e.target.value })}
+                          placeholder="例：顏色"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>欄標題 (Column Title)</Label>
+                        <Input
+                          value={productForm.table_col_title}
+                          onChange={(e) => setProductForm({ ...productForm, table_col_title: e.target.value })}
+                          placeholder="例：尺寸"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <Button onClick={onSubmit} className="w-full">
+                  {editingProduct ? '更新產品' : '新增產品'}
+                </Button>
               </div>
-              <div className="space-y-2">
-                <Label>庫存數量</Label>
-                <Input
-                  type="number"
-                  value={productForm.stock}
-                  onChange={(e) => setProductForm({ ...productForm, stock: e.target.value })}
-                  placeholder="0"
-                />
-              </div>
-              <Button onClick={onSubmit} className="w-full">
-                {editingProduct ? '更新產品' : '新增產品'}
-              </Button>
-            </div>
+            </ScrollArea>
           </DialogContent>
         </Dialog>
       </div>
@@ -127,7 +230,9 @@ export default function ProductsTab({
             <TableHeader>
               <TableRow>
                 <TableHead>產品名稱</TableHead>
-                <TableHead>價格</TableHead>
+                <TableHead>分類</TableHead>
+                <TableHead>零售價</TableHead>
+                <TableHead>經銷價</TableHead>
                 <TableHead>庫存</TableHead>
                 <TableHead>狀態</TableHead>
                 <TableHead className="text-right">操作</TableHead>
@@ -136,7 +241,7 @@ export default function ProductsTab({
             <TableBody>
               {products.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                     尚無產品，點擊上方按鈕新增
                   </TableCell>
                 </TableRow>
@@ -151,10 +256,25 @@ export default function ProductsTab({
                             {product.description}
                           </p>
                         )}
+                        {product.parent_product_id && (
+                          <Badge variant="outline" className="text-xs mt-1">
+                            子商品
+                          </Badge>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell>
-                      ${product.price}/{product.unit}
+                      {product.category || <span className="text-muted-foreground">-</span>}
+                    </TableCell>
+                    <TableCell>
+                      ${product.retail_price || product.price}/{product.unit}
+                    </TableCell>
+                    <TableCell>
+                      {product.dealer_price ? (
+                        `$${product.dealer_price}/${product.unit}`
+                      ) : (
+                        <span className="text-muted-foreground">-</span>
+                      )}
                     </TableCell>
                     <TableCell>{product.stock}</TableCell>
                     <TableCell>

@@ -91,42 +91,71 @@ export type Database = {
       }
       products: {
         Row: {
+          category: string | null
           created_at: string
+          dealer_price: number | null
           description: string | null
           id: string
           image_url: string | null
           is_active: boolean
           name: string
+          parent_product_id: string | null
           price: number
+          retail_price: number | null
           stock: number
+          table_col_title: string | null
+          table_row_title: string | null
+          table_title: string | null
           unit: string
           updated_at: string
         }
         Insert: {
+          category?: string | null
           created_at?: string
+          dealer_price?: number | null
           description?: string | null
           id?: string
           image_url?: string | null
           is_active?: boolean
           name: string
+          parent_product_id?: string | null
           price: number
+          retail_price?: number | null
           stock?: number
+          table_col_title?: string | null
+          table_row_title?: string | null
+          table_title?: string | null
           unit?: string
           updated_at?: string
         }
         Update: {
+          category?: string | null
           created_at?: string
+          dealer_price?: number | null
           description?: string | null
           id?: string
           image_url?: string | null
           is_active?: boolean
           name?: string
+          parent_product_id?: string | null
           price?: number
+          retail_price?: number | null
           stock?: number
+          table_col_title?: string | null
+          table_row_title?: string | null
+          table_title?: string | null
           unit?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "products_parent_product_id_fkey"
+            columns: ["parent_product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
