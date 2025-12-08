@@ -3,10 +3,17 @@ export interface Product {
   name: string;
   description: string | null;
   price: number;
+  retail_price: number | null;
+  dealer_price: number | null;
   unit: string;
   stock: number;
   image_url: string | null;
   is_active: boolean;
+  category: string | null;
+  parent_product_id: string | null;
+  table_title: string | null;
+  table_row_title: string | null;
+  table_col_title: string | null;
 }
 
 export interface Order {
@@ -33,6 +40,13 @@ export interface ProductFormData {
   name: string;
   description: string;
   price: string;
+  retail_price: string;
+  dealer_price: string;
   unit: string;
   stock: string;
+  category: string;
+  parent_product_id: string;
+  table_title: string;
+  table_row_title: string;
+  table_col_title: string;
 }
