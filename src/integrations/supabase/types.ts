@@ -97,7 +97,7 @@ export type Database = {
           description: string | null
           id: string
           image_url: string | null
-          is_active: boolean
+          status: string
           name: string
           parent_product_id: string | null
           price: number
@@ -116,7 +116,7 @@ export type Database = {
           description?: string | null
           id?: string
           image_url?: string | null
-          is_active?: boolean
+          status: string
           name: string
           parent_product_id?: string | null
           price: number
@@ -135,7 +135,7 @@ export type Database = {
           description?: string | null
           id?: string
           image_url?: string | null
-          is_active?: boolean
+          status: string
           name?: string
           parent_product_id?: string | null
           price?: number

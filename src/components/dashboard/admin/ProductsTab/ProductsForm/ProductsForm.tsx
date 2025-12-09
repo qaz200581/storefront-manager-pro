@@ -56,6 +56,38 @@ export default function ProductForm({
                                 />
                             </div>
                             <div className="space-y-2">
+                                <Label>產品品牌</Label>
+                                <Input
+                                    value={productForm.brand}
+                                    onChange={(e) => setProductForm({ ...productForm, brand: e.target.value })}
+                                    placeholder="輸入產品名稱"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>產品系列 *</Label>
+                                <Input
+                                    value={productForm.series}
+                                    onChange={(e) => setProductForm({ ...productForm, series: e.target.value })}
+                                    placeholder="輸入產品系列"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>產品型號 *</Label>
+                                <Input
+                                    value={productForm.model}
+                                    onChange={(e) => setProductForm({ ...productForm, model: e.target.value })}
+                                    placeholder="輸入產品型號"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>產品顏色 *</Label>
+                                <Input
+                                    value={productForm.color}
+                                    onChange={(e) => setProductForm({ ...productForm, color: e.target.value })}
+                                    placeholder="輸入產品顏色"
+                                />
+                            </div>
+                            <div className="space-y-2">
                                 <Label>分類</Label>
                                 <Input
                                     value={productForm.category}

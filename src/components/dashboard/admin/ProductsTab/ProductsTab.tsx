@@ -9,6 +9,10 @@ import { Product, ProductFormData } from "@/components/dashboard/admin/types";
 
 const initialProductForm: ProductFormData = {
   name: "",
+  brand: "",
+  series: "",
+  model: "",
+  color: "",
   category: "",
   description: "",
   price: "",
@@ -19,6 +23,7 @@ const initialProductForm: ProductFormData = {
   parent_product_id: "",
   table_settings: [],
 };
+const statusOptions: Product['status'][] = ['上架中', '售完停產', '預購中', '停產'];
 
 export default function ProductsTab() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -57,6 +62,10 @@ export default function ProductsTab() {
 
     const productData = {
       name: productForm.name.trim(),
+      brand: productForm.brand.trim() || null,
+      series: productForm.series.trim() || null,
+      model: productForm.model.trim() || null,
+      color: productForm.color.trim() || null,
       description: productForm.description?.trim() || null,
       price: parseFloat(productForm.price) || parseFloat(productForm.retail_price) || 0,
       retail_price: parseFloat(productForm.retail_price) || null,
@@ -65,6 +74,7 @@ export default function ProductsTab() {
       stock: parseInt(productForm.stock) || 0,
       category: productForm.category?.trim() || null,
       parent_product_id: productForm.parent_product_id || null,
+      status: editingProduct ? editingProduct.status : '上架中',
     };
 
     if (editingProduct) {
@@ -97,6 +107,10 @@ export default function ProductsTab() {
     setEditingProduct(product);
     setProductForm({
       name: product.name,
+      brand: product.brand,
+      series: product.series,
+      model: product.model,
+      color: product.color,
       category: product.category || "",
       description: product.description || "",
       price: product.price?.toString() || "",
@@ -122,24 +136,25 @@ export default function ProductsTab() {
     fetchProducts();
   };
 
-  const handleToggleStatus = async (product: Product) => {
+  const handleChangeStatus = async (productId: string, newState: Product['status']) => {
     const { error } = await supabase
-      .from("products")
-      .update({ is_active: !product.is_active })
-      .eq("id", product.id);
+      .from('products')
+      .update({ status: newState })
+      .eq('id', productId);
 
     if (error) {
-      toast.error("更新狀態失敗");
+      toast.error('更新狀態失敗');
       return;
     }
 
-    toast.success(product.is_active ? "產品已下架" : "產品已上架");
+    toast.success(`產品狀態已更新為 ${newState}`);
     fetchProducts();
   };
 
+
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-wrap justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">產品列表</h2>
         <Button
           onClick={() => {
@@ -151,6 +166,7 @@ export default function ProductsTab() {
           新增產品
         </Button>
       </div>
+
 
       <ProductForm
         isDialogOpen={isDialogOpen}
@@ -167,7 +183,7 @@ export default function ProductsTab() {
         products={products}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        onToggleStatus={handleToggleStatus}
+        onChangeState={handleChangeStatus}
       />
     </div>
   );

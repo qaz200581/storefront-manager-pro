@@ -3,7 +3,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Package, ShoppingCart } from 'lucide-react';
+import { Settings, Package, ShoppingCart, Clipboard,ClipboardCheck } from 'lucide-react';
 
 import AdminHeader from './AdminHeader';
 import AdminStatsCards from './AdminStatsCards';
@@ -30,7 +30,7 @@ export default function AdminDashboard() {
     const { count } = await supabase
       .from('products')
       .select('*', { count: 'exact', head: true });
-    
+
     setStats((prev) => ({ ...prev, totalProducts: count || 0 }));
   };
 
@@ -97,13 +97,23 @@ export default function AdminDashboard() {
 
         <Tabs defaultValue="products" className="space-y-4">
           <TabsList className="w-full md:w-auto">
+            
             <TabsTrigger value="products" className="flex-1 md:flex-none">
               <Package className="w-4 h-4 mr-2" />
               產品管理
             </TabsTrigger>
             <TabsTrigger value="orders" className="flex-1 md:flex-none">
-              <ShoppingCart className="w-4 h-4 mr-2" />
+              <Clipboard className="w-4 h-4 mr-2" />
+
               訂單管理
+            </TabsTrigger>
+            <TabsTrigger value="sales" className="flex-1 md:flex-none">
+              <ClipboardCheck className="w-4 h-4 mr-2" />
+              設定管理
+            </TabsTrigger>
+            <TabsTrigger value="setting" className="flex-1 md:flex-none">
+              <Settings className="w-4 h-4 mr-2" />
+              設定管理
             </TabsTrigger>
           </TabsList>
 

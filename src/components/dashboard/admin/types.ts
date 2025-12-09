@@ -1,6 +1,10 @@
 export interface Product {
   id: string;
   name: string;
+  brand?: string | null;
+  series?: string | null;
+  model?: string | null;
+  color?: string | null;
   description: string | null;
   price: number;
   retail_price: number | null;
@@ -8,7 +12,7 @@ export interface Product {
   unit: string;
   stock: number;
   image_url: string | null;
-  is_active: boolean;
+  status: '上架中' | '售完停產' | '預購中' | '停產';
   category: string | null;
   parent_product_id: string | null;
   table_settings?: {
@@ -42,6 +46,10 @@ export interface Stats {
 
 export interface ProductFormData {
   name: string;
+  brand: string;
+  series: string;
+  model: string;
+  color: string;
   description: string;
   price: string;
   retail_price: string;
