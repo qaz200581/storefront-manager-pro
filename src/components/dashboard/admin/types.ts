@@ -11,7 +11,7 @@ export interface Product {
   is_active: boolean;
   category: string | null;
   parent_product_id: string | null;
-  table_settings: {
+  table_settings?: {
     id: string;
     table_title: string;
     table_row_title: string;
@@ -43,14 +43,14 @@ export interface Stats {
 export interface ProductFormData {
   name: string;
   description: string;
-  price: string;
-  retail_price: string;
-  dealer_price: string;
+  price: number;
+  retail_price: number;
+  dealer_price: number;
   unit: string;
-  stock: string;
+  stock: number;
   category: string;
   parent_product_id: string;
-  table_settings: {
+  table_settings?: {
     id: string;
     table_title: string;
     table_row_title: string;

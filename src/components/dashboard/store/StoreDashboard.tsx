@@ -5,11 +5,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { Package, ShoppingCart, History } from 'lucide-react';
 
-import StoreHeader from './store/StoreHeader';
-import ProductsTab from './store/ProductsTab';
-import CartTab from './store/CartTab';
-import OrdersTab from './store/OrdersTab';
-import { Product, CartItem, Order, Profile } from './store/types';
+import StoreHeader from './StoreHeader';
+import ProductsTab from './ProductsTab';
+import CartTab from './CartTab';
+import OrdersTab from './OrdersTab';
+import { Product, CartItem, Order, Profile } from './types';
 
 export default function StoreDashboard() {
   const { signOut, user } = useAuth();

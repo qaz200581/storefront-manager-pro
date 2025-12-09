@@ -5,11 +5,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { Package, ShoppingCart } from 'lucide-react';
 
-import AdminHeader from './admin/AdminHeader';
-import AdminStatsCards from './admin/AdminStatsCards';
-import ProductsTab from './admin/ProductsTab';
-import OrdersTab from './admin/OrdersTab';
-import { Product, Order, Stats, ProductFormData } from './admin/types';
+import AdminHeader from './AdminHeader';
+import AdminStatsCards from './AdminStatsCards';
+import ProductsTab from './ProductsTab/ProductsTab';
+import OrdersTab from './OrdersTab';
+import { Product, Order, Stats, ProductFormData } from './types';
 
 const initialProductForm: ProductFormData = {
   name: '',

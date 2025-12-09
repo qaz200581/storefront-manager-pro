@@ -1,7 +1,7 @@
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
-import AdminDashboard from '@/components/dashboard/AdminDashboard';
-import StoreDashboard from '@/components/dashboard/StoreDashboard';
+import AdminDashboard from '@/components/dashboard/admin/AdminDashboard';
+import StoreDashboard from '@/components/dashboard/store/StoreDashboard';
 
 export default function Dashboard() {
   const { user, role, loading } = useAuth();
