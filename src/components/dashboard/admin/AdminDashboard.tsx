@@ -8,7 +8,7 @@ import { Package, ShoppingCart } from 'lucide-react';
 import AdminHeader from './AdminHeader';
 import AdminStatsCards from './AdminStatsCards';
 import ProductsTab from './ProductsTab/ProductsTab';
-import OrdersTab from './OrdersTab';
+import OrdersTab from './OrdersTab/OrdersTab';
 import { Product, Order, Stats, ProductFormData } from './types';
 
 const initialProductForm: ProductFormData = {

@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Order } from './types';
+import { Order } from '../types';
 
 interface OrdersTabProps {
   orders: Order[];
