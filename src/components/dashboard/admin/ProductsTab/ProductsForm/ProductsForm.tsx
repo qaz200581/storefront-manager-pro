@@ -80,7 +80,7 @@ export default function ProductForm({
                                 <Input
                                     type="number"
                                     value={productForm.price}
-                                    onChange={(e) => setProductForm({ ...productForm, price: Number(e.target.value) })}
+                                    onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
                                     placeholder="0"
                                 />
                             </div>
@@ -89,7 +89,7 @@ export default function ProductForm({
                                 <Input
                                     type="number"
                                     value={productForm.retail_price}
-                                    onChange={(e) => setProductForm({ ...productForm, retail_price: Number(e.target.value) })}
+                                    onChange={(e) => setProductForm({ ...productForm, retail_price: e.target.value })}
                                     placeholder="0"
                                 />
                             </div>
@@ -98,7 +98,7 @@ export default function ProductForm({
                                 <Input
                                     type="number"
                                     value={productForm.dealer_price}
-                                    onChange={(e) => setProductForm({ ...productForm, dealer_price: Number(e.target.value) })}
+                                    onChange={(e) => setProductForm({ ...productForm, dealer_price: e.target.value })}
                                     placeholder="0"
                                 />
                             </div>
@@ -118,7 +118,7 @@ export default function ProductForm({
                                 <Input
                                     type="number"
                                     value={productForm.stock}
-                                    onChange={(e) => setProductForm({ ...productForm, stock: Number(e.target.value) })}
+                                    onChange={(e) => setProductForm({ ...productForm, stock: e.target.value })}
                                     placeholder="0"
                                 />
                             </div>
