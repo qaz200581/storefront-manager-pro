@@ -11,9 +11,13 @@ export interface Product {
   is_active: boolean;
   category: string | null;
   parent_product_id: string | null;
-  table_title: string | null;
-  table_row_title: string | null;
-  table_col_title: string | null;
+  table_settings: {
+    id: string;
+    table_title: string;
+    table_row_title: string;
+    table_col_title: string;
+  }[] | null;
+
 }
 
 export interface Order {
@@ -46,7 +50,10 @@ export interface ProductFormData {
   stock: string;
   category: string;
   parent_product_id: string;
-  table_title: string;
-  table_row_title: string;
-  table_col_title: string;
+  table_settings: {
+    id: string;
+    table_title: string;
+    table_row_title: string;
+    table_col_title: string;
+  }[];
 }

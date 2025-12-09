@@ -21,9 +21,7 @@ const initialProductForm: ProductFormData = {
   stock: '',
   category: '',
   parent_product_id: '',
-  table_title: '',
-  table_row_title: '',
-  table_col_title: '',
+  table_settings: [],
 };
 
 export default function AdminDashboard() {
@@ -78,7 +76,7 @@ export default function AdminDashboard() {
       .in('id', userIds);
 
     const profilesMap = new Map(profilesData?.map(p => [p.id, p]) || []);
-    
+
     const ordersWithProfiles = (fetchedOrders || []).map(order => ({
       ...order,
       profiles: profilesMap.get(order.user_id) || { store_name: null, email: '' }
@@ -115,9 +113,8 @@ export default function AdminDashboard() {
       stock: parseInt(productForm.stock) || 0,
       category: productForm.category.trim() || null,
       parent_product_id: productForm.parent_product_id || null,
-      table_title: productForm.table_title.trim() || null,
-      table_row_title: productForm.table_row_title.trim() || null,
-      table_col_title: productForm.table_col_title.trim() || null,
+      table_settings: productForm.table_settings ?? [],
+
     };
 
     if (editingProduct) {
@@ -159,9 +156,7 @@ export default function AdminDashboard() {
       stock: product.stock.toString(),
       category: product.category || '',
       parent_product_id: product.parent_product_id || '',
-      table_title: product.table_title || '',
-      table_row_title: product.table_row_title || '',
-      table_col_title: product.table_col_title || '',
+      table_settings: product.table_settings ?? [],
     });
     setIsProductDialogOpen(true);
   };

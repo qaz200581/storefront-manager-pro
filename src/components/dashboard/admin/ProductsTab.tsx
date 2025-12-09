@@ -185,35 +185,90 @@ export default function ProductsTab({
 
                 <div className="border-t pt-4">
                   <h4 className="font-medium mb-3">表格式下單設定</h4>
+
                   <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label>表格標題 (Table Title)</Label>
-                      <Input
-                        value={productForm.table_title}
-                        onChange={(e) => setProductForm({ ...productForm, table_title: e.target.value })}
-                        placeholder="例：尺寸規格表"
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>列標題 (Row Title)</Label>
-                        <Input
-                          value={productForm.table_row_title}
-                          onChange={(e) => setProductForm({ ...productForm, table_row_title: e.target.value })}
-                          placeholder="例：顏色"
-                        />
+                    {productForm.table_settings.map((setting, index) => (
+                      <div
+                        key={setting.id}
+                        className="border p-4 rounded-md relative bg-muted/30 space-y-3"
+                      >
+                        <button
+                          className="absolute top-2 right-2 text-sm text-red-500"
+                          onClick={() => {
+                            const updated = productForm.table_settings.filter((_, i) => i !== index)
+                            setProductForm({ ...productForm, table_settings: updated })
+                          }}
+                        >
+                          刪除
+                        </button>
+
+                        <div className="space-y-2">
+                          <Label>表格標題 (Table Title)</Label>
+                          <Input
+                            value={setting.table_title}
+                            onChange={(e) => {
+                              const updated = [...productForm.table_settings]
+                              updated[index].table_title = e.target.value
+                              setProductForm({ ...productForm, table_settings: updated })
+                            }}
+                            placeholder="例：尺寸規格表"
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>列標題 (Row Title)</Label>
+                            <Input
+                              value={setting.table_row_title}
+                              onChange={(e) => {
+                                const updated = [...productForm.table_settings]
+                                updated[index].table_row_title = e.target.value
+                                setProductForm({ ...productForm, table_settings: updated })
+                              }}
+                              placeholder="例：顏色"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>欄標題 (Column Title)</Label>
+                            <Input
+                              value={setting.table_col_title}
+                              onChange={(e) => {
+                                const updated = [...productForm.table_settings]
+                                updated[index].table_col_title = e.target.value
+                                setProductForm({ ...productForm, table_settings: updated })
+                              }}
+                              placeholder="例：尺寸"
+                            />
+                          </div>
+                        </div>
                       </div>
-                      <div className="space-y-2">
-                        <Label>欄標題 (Column Title)</Label>
-                        <Input
-                          value={productForm.table_col_title}
-                          onChange={(e) => setProductForm({ ...productForm, table_col_title: e.target.value })}
-                          placeholder="例：尺寸"
-                        />
-                      </div>
-                    </div>
+                    ))}
+
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() =>
+                        setProductForm({
+                          ...productForm,
+                          table_settings: [
+                            ...productForm.table_settings,
+                            {
+                              id: crypto.randomUUID(),
+                              table_title: '',
+                              table_row_title: '',
+                              table_col_title: '',
+                            },
+                          ],
+                        })
+                      }
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      新增一組表格設定
+                    </Button>
                   </div>
                 </div>
+
 
                 <Button onClick={onSubmit} className="w-full">
                   {editingProduct ? '更新產品' : '新增產品'}
@@ -256,11 +311,7 @@ export default function ProductsTab({
                             {product.description}
                           </p>
                         )}
-                        {product.parent_product_id && (
-                          <Badge variant="outline" className="text-xs mt-1">
-                            子商品
-                          </Badge>
-                        )}
+
                       </div>
                     </TableCell>
                     <TableCell>
