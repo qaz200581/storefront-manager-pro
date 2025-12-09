@@ -9,24 +9,10 @@ import AdminHeader from './AdminHeader';
 import AdminStatsCards from './AdminStatsCards';
 import ProductsTab from './ProductsTab/ProductsTab';
 import OrdersTab from './OrdersTab/OrdersTab';
-import { Product, Order, Stats, ProductFormData } from './types';
-
-const initialProductForm: ProductFormData = {
-  name: '',
-  description: '',
-  price: '',
-  retail_price: '',
-  dealer_price: '',
-  unit: '個',
-  stock: '',
-  category: '',
-  parent_product_id: '',
-  table_settings: [],
-};
+import { Order, Stats } from './types';
 
 export default function AdminDashboard() {
   const { signOut } = useAuth();
-  const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [stats, setStats] = useState<Stats>({
     totalProducts: 0,
@@ -34,28 +20,18 @@ export default function AdminDashboard() {
     totalRevenue: 0,
     pendingOrders: 0,
   });
-  const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [productForm, setProductForm] = useState<ProductFormData>(initialProductForm);
 
   useEffect(() => {
-    fetchProducts();
+    fetchStats();
     fetchOrders();
   }, []);
 
-  const fetchProducts = async () => {
-    const { data, error } = await supabase
+  const fetchStats = async () => {
+    const { count } = await supabase
       .from('products')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      toast.error('無法載入產品');
-      return;
-    }
-
-    setProducts(data || []);
-    setStats((prev) => ({ ...prev, totalProducts: data?.length || 0 }));
+      .select('*', { count: 'exact', head: true });
+    
+    setStats((prev) => ({ ...prev, totalProducts: count || 0 }));
   };
 
   const fetchOrders = async () => {
@@ -97,97 +73,6 @@ export default function AdminDashboard() {
     }));
   };
 
-  const handleProductSubmit = async () => {
-    if (!productForm.name || !productForm.retail_price) {
-      toast.error('請填寫產品名稱和零售價');
-      return;
-    }
-
-    const productData = {
-      name: productForm.name.trim(),
-      description: productForm.description.trim() || null,
-      price: parseFloat(productForm.price) || parseFloat(productForm.retail_price),
-      retail_price: parseFloat(productForm.retail_price),
-      dealer_price: productForm.dealer_price ? parseFloat(productForm.dealer_price) : null,
-      unit: productForm.unit,
-      stock: parseInt(productForm.stock) || 0,
-      category: productForm.category.trim() || null,
-      parent_product_id: productForm.parent_product_id || null,
-      table_settings: productForm.table_settings ?? [],
-
-    };
-
-    if (editingProduct) {
-      const { error } = await supabase
-        .from('products')
-        .update(productData)
-        .eq('id', editingProduct.id);
-
-      if (error) {
-        toast.error('更新產品失敗');
-        return;
-      }
-      toast.success('產品已更新');
-    } else {
-      const { error } = await supabase.from('products').insert(productData);
-
-      if (error) {
-        toast.error('新增產品失敗');
-        return;
-      }
-      toast.success('產品已新增');
-    }
-
-    setIsProductDialogOpen(false);
-    setEditingProduct(null);
-    setProductForm(initialProductForm);
-    fetchProducts();
-  };
-
-  const handleEditProduct = (product: Product) => {
-    setEditingProduct(product);
-    setProductForm({
-      name: product.name,
-      description: product.description || '',
-      price: product.price?.toString() || '',
-      retail_price: product.retail_price?.toString() || product.price?.toString() || '',
-      dealer_price: product.dealer_price?.toString() || '',
-      unit: product.unit,
-      stock: product.stock.toString(),
-      category: product.category || '',
-      parent_product_id: product.parent_product_id || '',
-      table_settings: product.table_settings ?? [],
-    });
-    setIsProductDialogOpen(true);
-  };
-
-  const handleDeleteProduct = async (id: string) => {
-    const { error } = await supabase.from('products').delete().eq('id', id);
-
-    if (error) {
-      toast.error('刪除產品失敗');
-      return;
-    }
-
-    toast.success('產品已刪除');
-    fetchProducts();
-  };
-
-  const handleToggleProductStatus = async (product: Product) => {
-    const { error } = await supabase
-      .from('products')
-      .update({ is_active: !product.is_active })
-      .eq('id', product.id);
-
-    if (error) {
-      toast.error('更新狀態失敗');
-      return;
-    }
-
-    toast.success(product.is_active ? '產品已下架' : '產品已上架');
-    fetchProducts();
-  };
-
   const handleUpdateOrderStatus = async (orderId: string, status: string) => {
     const { error } = await supabase
       .from('orders')
@@ -201,11 +86,6 @@ export default function AdminDashboard() {
 
     toast.success('訂單狀態已更新');
     fetchOrders();
-  };
-
-  const handleResetProductForm = () => {
-    setEditingProduct(null);
-    setProductForm(initialProductForm);
   };
 
   return (
@@ -228,19 +108,7 @@ export default function AdminDashboard() {
           </TabsList>
 
           <TabsContent value="products">
-            <ProductsTab
-              products={products}
-              isDialogOpen={isProductDialogOpen}
-              setIsDialogOpen={setIsProductDialogOpen}
-              editingProduct={editingProduct}
-              productForm={productForm}
-              setProductForm={setProductForm}
-              onResetForm={handleResetProductForm}
-              onSubmit={handleProductSubmit}
-              onEdit={handleEditProduct}
-              onDelete={handleDeleteProduct}
-              onToggleStatus={handleToggleProductStatus}
-            />
+            <ProductsTab />
           </TabsContent>
 
           <TabsContent value="orders">

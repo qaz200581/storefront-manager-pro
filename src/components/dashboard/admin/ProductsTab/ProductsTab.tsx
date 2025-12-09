@@ -1,115 +1,157 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 import ProductForm from "./ProductsForm/ProductsForm";
 import ProductList from "./ProductsList/ProductList";
 import { Product, ProductFormData } from "@/components/dashboard/admin/types";
 
+const initialProductForm: ProductFormData = {
+  name: "",
+  category: "",
+  description: "",
+  price: "",
+  retail_price: "",
+  dealer_price: "",
+  unit: "個",
+  stock: "",
+  parent_product_id: "",
+  table_settings: [],
+};
+
 export default function ProductsTab() {
   const [products, setProducts] = useState<Product[]>([]);
-
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [productForm, setProductForm] = useState<ProductFormData>(initialProductForm);
 
-  const [productForm, setProductForm] = useState<ProductFormData>({
-    name: "",
-    category: "",
-    description: "",
-    price: 0,
-    retail_price: 0,
-    dealer_price: 0,
-    unit: "",
-    stock: 0,
-    parent_product_id: "",
-  });
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
-  /** 重置表單內容 */
+  const fetchProducts = async () => {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      toast.error("無法載入產品");
+      return;
+    }
+
+    setProducts(data || []);
+  };
+
   const onResetForm = () => {
-    setProductForm({
-      name: "",
-      category: "",
-      description: "",
-      price: 0,
-      retail_price: 0,
-      dealer_price: 0,
-      unit: "",
-      stock: 0,
-      parent_product_id: "",
-      table_settings: [],
-    });
+    setProductForm(initialProductForm);
     setEditingProduct(null);
   };
 
-  /** 新增或更新產品 */
   const onSubmit = async () => {
+    if (!productForm.name || !productForm.retail_price) {
+      toast.error("請填寫產品名稱和零售價");
+      return;
+    }
+
+    const productData = {
+      name: productForm.name.trim(),
+      description: productForm.description?.trim() || null,
+      price: parseFloat(productForm.price) || parseFloat(productForm.retail_price) || 0,
+      retail_price: parseFloat(productForm.retail_price) || null,
+      dealer_price: productForm.dealer_price ? parseFloat(productForm.dealer_price) : null,
+      unit: productForm.unit,
+      stock: parseInt(productForm.stock) || 0,
+      category: productForm.category?.trim() || null,
+      parent_product_id: productForm.parent_product_id || null,
+    };
+
     if (editingProduct) {
-      // 更新產品
-      console.log("更新產品:", productForm);
+      const { error } = await supabase
+        .from("products")
+        .update(productData)
+        .eq("id", editingProduct.id);
 
-      // TODO: Supabase update...
-      setProducts((prev) =>
-        prev.map((p) => (p.id === editingProduct.id ? { ...p, ...productForm } : p))
-      );
+      if (error) {
+        toast.error("更新產品失敗");
+        return;
+      }
+      toast.success("產品已更新");
     } else {
-      // 新增產品
-      console.log("新增產品:", productForm);
+      const { error } = await supabase.from("products").insert(productData);
 
-      const newProduct: Product = {
-        id: crypto.randomUUID(),
-        is_active: true,
-        image_url: "", // 可之後再補圖片功能
-        ...productForm,
-      };
-
-      // TODO: Supabase insert...
-      setProducts((prev) => [...prev, newProduct]);
+      if (error) {
+        toast.error("新增產品失敗");
+        return;
+      }
+      toast.success("產品已新增");
     }
 
     setIsDialogOpen(false);
     onResetForm();
+    fetchProducts();
   };
 
-  /** 按下編輯按鈕 */
   const handleEdit = (product: Product) => {
     setEditingProduct(product);
     setProductForm({
       name: product.name,
-      category: product.category,
-      description: product.description,
-      price: product.price,
-      retail_price: product.retail_price,
-      dealer_price: product.dealer_price,
+      category: product.category || "",
+      description: product.description || "",
+      price: product.price?.toString() || "",
+      retail_price: product.retail_price?.toString() || "",
+      dealer_price: product.dealer_price?.toString() || "",
       unit: product.unit,
-      stock: product.stock,
+      stock: product.stock?.toString() || "",
       parent_product_id: product.parent_product_id || "",
+      table_settings: product.table_settings || [],
     });
     setIsDialogOpen(true);
   };
 
-  /** 刪除產品 */
-  const handleDelete = (id: string) => {
-    setProducts((prev) => prev.filter((p) => p.id !== id));
+  const handleDelete = async (id: string) => {
+    const { error } = await supabase.from("products").delete().eq("id", id);
+
+    if (error) {
+      toast.error("刪除產品失敗");
+      return;
+    }
+
+    toast.success("產品已刪除");
+    fetchProducts();
   };
 
-  /** 上架 / 下架切換 */
-  const handleToggleStatus = (product: Product) => {
-    setProducts((prev) =>
-      prev.map((p) =>
-        p.id === product.id ? { ...p, is_active: !p.is_active } : p
-      )
-    );
+  const handleToggleStatus = async (product: Product) => {
+    const { error } = await supabase
+      .from("products")
+      .update({ is_active: !product.is_active })
+      .eq("id", product.id);
+
+    if (error) {
+      toast.error("更新狀態失敗");
+      return;
+    }
+
+    toast.success(product.is_active ? "產品已下架" : "產品已上架");
+    fetchProducts();
   };
 
   return (
-    <div className="p-4 space-y-6">
-      <button
-        className="btn btn-primary"
-        onClick={() => {
-          onResetForm();
-          setIsDialogOpen(true);
-        }}
-      >
-        新增產品
-      </button>
-      {/* 新增/編輯產品表單 */}
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-semibold">產品列表</h2>
+        <Button
+          onClick={() => {
+            onResetForm();
+            setIsDialogOpen(true);
+          }}
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          新增產品
+        </Button>
+      </div>
+
       <ProductForm
         isDialogOpen={isDialogOpen}
         setIsDialogOpen={setIsDialogOpen}
@@ -121,7 +163,6 @@ export default function ProductsTab() {
         products={products}
       />
 
-      {/* 產品列表 */}
       <ProductList
         products={products}
         onEdit={handleEdit}

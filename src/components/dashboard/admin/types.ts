@@ -43,11 +43,11 @@ export interface Stats {
 export interface ProductFormData {
   name: string;
   description: string;
-  price: number;
-  retail_price: number;
-  dealer_price: number;
+  price: string;
+  retail_price: string;
+  dealer_price: string;
   unit: string;
-  stock: number;
+  stock: string;
   category: string;
   parent_product_id: string;
   table_settings?: {
