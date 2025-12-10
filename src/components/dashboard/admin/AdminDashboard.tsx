@@ -3,12 +3,13 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Settings, Package, ShoppingCart, Clipboard,ClipboardCheck } from 'lucide-react';
+import { Settings, Package, ShoppingCart, Clipboard, ClipboardCheck ,CirclePlus} from 'lucide-react';
 
 import AdminHeader from './AdminHeader';
 import AdminStatsCards from './AdminStatsCards';
 import ProductsTab from './ProductsTab/ProductsTab';
 import OrdersTab from './OrdersTab/OrdersTab';
+import DocumentsTab from './DocumentsTab/DocumentsTab'
 import { Order, Stats } from './types';
 
 export default function AdminDashboard() {
@@ -97,7 +98,10 @@ export default function AdminDashboard() {
 
         <Tabs defaultValue="products" className="space-y-4">
           <TabsList className="w-full md:w-auto">
-            
+            <TabsTrigger value="document" className="flex-1 md:flex-none">
+              <CirclePlus className="w-4 h-4 mr-2" />
+              新增
+            </TabsTrigger>
             <TabsTrigger value="products" className="flex-1 md:flex-none">
               <Package className="w-4 h-4 mr-2" />
               產品管理
@@ -109,13 +113,16 @@ export default function AdminDashboard() {
             </TabsTrigger>
             <TabsTrigger value="sales" className="flex-1 md:flex-none">
               <ClipboardCheck className="w-4 h-4 mr-2" />
-              設定管理
+              銷售管理
             </TabsTrigger>
             <TabsTrigger value="setting" className="flex-1 md:flex-none">
               <Settings className="w-4 h-4 mr-2" />
               設定管理
             </TabsTrigger>
           </TabsList>
+          <TabsContent value="document">
+            <DocumentsTab />
+          </TabsContent>
 
           <TabsContent value="products">
             <ProductsTab />

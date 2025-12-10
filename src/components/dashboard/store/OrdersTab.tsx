@@ -9,7 +9,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Order } from './types';
-
+import { ProductSidebar } from '../ProductSelectSideBar/ProductSelectSidebar';
 interface OrdersTabProps {
   orders: Order[];
 }
@@ -33,7 +33,6 @@ export default function OrdersTab({ orders }: OrdersTabProps) {
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-semibold">訂單記錄</h2>
-
       <Card>
         <CardContent className="p-0">
           <Table>
