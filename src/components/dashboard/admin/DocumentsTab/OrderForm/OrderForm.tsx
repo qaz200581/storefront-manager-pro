@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { Trash2, Plus } from 'lucide-react';
-
+import ProductSelectorSidebar from '../../../share/ProductsSelectSidebar/ProductSelectorSidebar';
 const STORAGE_KEY = 'order-draft-';
 
 interface OrderItem {
@@ -37,7 +37,7 @@ export default function OrderForm({ docId, type, onClose, onSubmitSuccess }: Pro
       note: '',
     };
   });
-
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const title = type === 'sales' ? '銷售單' : '訂單';
 
   // 自動儲存草稿
@@ -70,12 +70,19 @@ export default function OrderForm({ docId, type, onClose, onSubmitSuccess }: Pro
     onSubmitSuccess?.();
   };
 
-  const addItem = () => {
+  const openSidebar = () => { // <--- 新增函數
+    setIsSidebarOpen(true);
+  };
+
+  // 舊的 addItem 函數現在由側邊欄選中產品後觸發
+  const handleSelectProduct = (item: { name: string; price: number }) => {
     setFormData(prev => ({
       ...prev,
-      items: [...prev.items, { name: '', qty: 1, price: 0 }]
+      items: [...prev.items, { name: item.name, qty: 1, price: item.price }], // 數量預設為 1
     }));
   };
+
+  // 移除舊的 addItem 函數
 
   const removeItem = (idx: number) => {
     setFormData(prev => ({
@@ -111,16 +118,21 @@ export default function OrderForm({ docId, type, onClose, onSubmitSuccess }: Pro
           />
         </div>
       </div>
-
+      {/* 渲染側邊欄組件 */}
+      <ProductSelectorSidebar
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        onSelectProduct={handleSelectProduct}
+      />
       <div className="space-y-3">
         <div className="flex justify-between items-center">
           <Label>品項</Label>
-          <Button size="sm" onClick={addItem}>
+          <Button size="sm" onClick={openSidebar}>
             <Plus className="w-4 h-4 mr-1" />
             新增品項
           </Button>
         </div>
-        
+
         {formData.items.map((item, idx) => (
           <div key={idx} className="flex items-center gap-3">
             <div className="grid grid-cols-3 gap-3 flex-1">
@@ -154,7 +166,7 @@ export default function OrderForm({ docId, type, onClose, onSubmitSuccess }: Pro
             </Button>
           </div>
         ))}
-        
+
         {formData.items.length > 0 && (
           <div className="text-right text-lg font-semibold text-primary">
             總計: ${total.toLocaleString()}

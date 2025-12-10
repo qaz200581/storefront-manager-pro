@@ -18,14 +18,12 @@ const initialProductForm: ProductFormData = {
   price: "",
   retail_price: "",
   dealer_price: "",
+  barcode: "",
   unit: "個",
   stock: "",
   parent_product_id: "",
-  table_title: "",
-  table_row_title: "",
-  table_col_title: "",
+  table_settings: [],
 };
-
 export default function ProductsTab() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -47,7 +45,7 @@ export default function ProductsTab() {
       return;
     }
 
-    setProducts((data as Product[]) || []);
+    setProducts(data || []);
   };
 
   const onResetForm = () => {
@@ -63,6 +61,10 @@ export default function ProductsTab() {
 
     const productData = {
       name: productForm.name.trim(),
+      brand: productForm.brand?.trim() || null,
+      series: productForm.series?.trim() || null,
+      model: productForm.model?.trim() || null,
+      color: productForm.color?.trim() || null,
       description: productForm.description?.trim() || null,
       price: parseFloat(productForm.price) || parseFloat(productForm.retail_price) || 0,
       retail_price: parseFloat(productForm.retail_price) || null,
@@ -71,9 +73,6 @@ export default function ProductsTab() {
       stock: parseInt(productForm.stock) || 0,
       category: productForm.category?.trim() || null,
       parent_product_id: productForm.parent_product_id || null,
-      table_title: productForm.table_title?.trim() || null,
-      table_row_title: productForm.table_row_title?.trim() || null,
-      table_col_title: productForm.table_col_title?.trim() || null,
       status: editingProduct ? editingProduct.status : '上架中',
     };
 
@@ -107,10 +106,11 @@ export default function ProductsTab() {
     setEditingProduct(product);
     setProductForm({
       name: product.name,
-      brand: product.brand || "",
-      series: product.series || "",
-      model: product.model || "",
-      color: product.color || "",
+      brand: product.brand,
+      series: product.series,
+      model: product.model,
+      barcode: product.barcode || "",
+      color: product.color,
       category: product.category || "",
       description: product.description || "",
       price: product.price?.toString() || "",
@@ -119,9 +119,7 @@ export default function ProductsTab() {
       unit: product.unit,
       stock: product.stock?.toString() || "",
       parent_product_id: product.parent_product_id || "",
-      table_title: product.table_title || "",
-      table_row_title: product.table_row_title || "",
-      table_col_title: product.table_col_title || "",
+      table_settings: product.table_settings || [],
     });
     setIsDialogOpen(true);
   };
@@ -138,10 +136,10 @@ export default function ProductsTab() {
     fetchProducts();
   };
 
-  const handleChangeStatus = async (productId: string, newStatus: Product['status']) => {
+  const handleChangeStatus = async (productId: string, newState: Product['status']) => {
     const { error } = await supabase
       .from('products')
-      .update({ status: newStatus })
+      .update({ status: newState })
       .eq('id', productId);
 
     if (error) {
@@ -149,9 +147,10 @@ export default function ProductsTab() {
       return;
     }
 
-    toast.success(`產品狀態已更新為 ${newStatus}`);
+    toast.success(`產品狀態已更新為 ${newState}`);
     fetchProducts();
   };
+
 
   return (
     <div className="space-y-4">
@@ -167,6 +166,7 @@ export default function ProductsTab() {
           新增產品
         </Button>
       </div>
+
 
       <ProductForm
         isDialogOpen={isDialogOpen}

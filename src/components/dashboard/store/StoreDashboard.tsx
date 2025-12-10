@@ -41,11 +41,12 @@ export default function StoreDashboard() {
   };
 
   const fetchProducts = async () => {
+    console.log("載入產品中...")
     const { data, error } = await supabase
       .from('products')
       .select('*')
-      .order('name');
-
+      .order('created_at', { ascending: false });
+    
     if (error) {
       toast.error('無法載入產品');
       return;

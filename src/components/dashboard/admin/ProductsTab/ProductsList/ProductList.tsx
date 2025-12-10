@@ -13,13 +13,13 @@ interface ProductListProps {
     onChangeStatus: (productId: string, newStatus: Product['status']) => void;
 }
 
-const statusOptions: Product['status'][] = ['上架中', '已下架', '預購中', '售完'];
+const statusOptions: Product['status'][] = ['上架中','售完停產' , '預購中', '停產'];
 
-const statusVariants: Record<Product['status'], 'default' | 'secondary' | 'destructive' | 'outline'> = {
+const statusVariants: Record<Product['status'], 'default'| 'destructive'  | 'destructive' | 'outline'> = {
     '上架中': 'default',
-    '已下架': 'secondary',
+    '售完停產' : 'destructive',
     '預購中': 'outline',
-    '售完': 'destructive',
+    '停產': 'destructive',
 };
 
 export default function ProductList({ products, onEdit, onDelete, onChangeStatus }: ProductListProps) {

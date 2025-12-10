@@ -8,17 +8,20 @@ export interface Product {
   description: string | null;
   price: number;
   retail_price: number | null;
+  barcode?: string | null;
   dealer_price: number | null;
   unit: string;
   stock: number;
   image_url: string | null;
-  is_active: boolean;
-  status: '上架中' | '已下架' | '預購中' | '售完';
+  status: '上架中' |'售完停產' | '預購中' | '停產';
   category: string | null;
   parent_product_id: string | null;
-  table_title: string | null;
-  table_row_title: string | null;
-  table_col_title: string | null;
+  table_settings?: {
+    id: string;
+    table_title: string;
+    table_row_title: string;
+    table_col_title: string;
+  }[] | null;
   created_at: string;
   updated_at: string;
 }
@@ -56,8 +59,12 @@ export interface ProductFormData {
   unit: string;
   stock: string;
   category: string;
+  barcode: string;
   parent_product_id: string;
-  table_title: string;
-  table_row_title: string;
-  table_col_title: string;
+  table_settings?: {
+    id: string;
+    table_title: string;
+    table_row_title: string;
+    table_col_title: string;
+  }[] | null;
 }
