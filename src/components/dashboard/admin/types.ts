@@ -13,6 +13,7 @@ export interface Product {
   stock: number;
   image_url: string | null;
   is_active: boolean;
+  status: '上架中' | '已下架' | '預購中' | '售完';
   category: string | null;
   parent_product_id: string | null;
   table_title: string | null;

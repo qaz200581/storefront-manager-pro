@@ -74,7 +74,7 @@ export default function ProductsTab() {
       table_title: productForm.table_title?.trim() || null,
       table_row_title: productForm.table_row_title?.trim() || null,
       table_col_title: productForm.table_col_title?.trim() || null,
-      is_active: editingProduct ? editingProduct.is_active : true,
+      status: editingProduct ? editingProduct.status : '上架中',
     };
 
     if (editingProduct) {
@@ -138,10 +138,10 @@ export default function ProductsTab() {
     fetchProducts();
   };
 
-  const handleToggleActive = async (productId: string, isActive: boolean) => {
+  const handleChangeStatus = async (productId: string, newStatus: Product['status']) => {
     const { error } = await supabase
       .from('products')
-      .update({ is_active: isActive })
+      .update({ status: newStatus })
       .eq('id', productId);
 
     if (error) {
@@ -149,7 +149,7 @@ export default function ProductsTab() {
       return;
     }
 
-    toast.success(`產品已${isActive ? '上架' : '下架'}`);
+    toast.success(`產品狀態已更新為 ${newStatus}`);
     fetchProducts();
   };
 
@@ -183,7 +183,7 @@ export default function ProductsTab() {
         products={products}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        onToggleActive={handleToggleActive}
+        onChangeStatus={handleChangeStatus}
       />
     </div>
   );
