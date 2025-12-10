@@ -12,16 +12,14 @@ export interface Product {
   unit: string;
   stock: number;
   image_url: string | null;
-  status: '上架中' | '售完停產' | '預購中' | '停產';
+  is_active: boolean;
   category: string | null;
   parent_product_id: string | null;
-  table_settings?: {
-    id: string;
-    table_title: string;
-    table_row_title: string;
-    table_col_title: string;
-  }[] | null;
-
+  table_title: string | null;
+  table_row_title: string | null;
+  table_col_title: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Order {
@@ -58,10 +56,7 @@ export interface ProductFormData {
   stock: string;
   category: string;
   parent_product_id: string;
-  table_settings?: {
-    id: string;
-    table_title: string;
-    table_row_title: string;
-    table_col_title: string;
-  }[];
+  table_title: string;
+  table_row_title: string;
+  table_col_title: string;
 }
