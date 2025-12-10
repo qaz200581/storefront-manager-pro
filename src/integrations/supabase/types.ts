@@ -102,6 +102,7 @@ export type Database = {
           parent_product_id: string | null
           price: number
           retail_price: number | null
+          status: string
           stock: number
           table_col_title: string | null
           table_row_title: string | null
@@ -121,6 +122,7 @@ export type Database = {
           parent_product_id?: string | null
           price: number
           retail_price?: number | null
+          status?: string
           stock?: number
           table_col_title?: string | null
           table_row_title?: string | null
@@ -140,6 +142,7 @@ export type Database = {
           parent_product_id?: string | null
           price?: number
           retail_price?: number | null
+          status?: string
           stock?: number
           table_col_title?: string | null
           table_row_title?: string | null

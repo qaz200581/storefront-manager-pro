@@ -4,16 +4,25 @@ import { Edit, Trash2 } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Product } from '@/components/dashboard/admin/types';
-import { Switch } from '@/components/ui/switch';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 
 interface ProductListProps {
     products: Product[];
     onEdit: (product: Product) => void;
     onDelete: (id: string) => void;
-    onToggleActive: (productId: string, isActive: boolean) => void;
+    onChangeStatus: (productId: string, newStatus: Product['status']) => void;
 }
 
-export default function ProductList({ products, onEdit, onDelete, onToggleActive }: ProductListProps) {
+const statusOptions: Product['status'][] = ['上架中', '已下架', '預購中', '售完'];
+
+const statusVariants: Record<Product['status'], 'default' | 'secondary' | 'destructive' | 'outline'> = {
+    '上架中': 'default',
+    '已下架': 'secondary',
+    '預購中': 'outline',
+    '售完': 'destructive',
+};
+
+export default function ProductList({ products, onEdit, onDelete, onChangeStatus }: ProductListProps) {
     return (
         <Card>
             <CardContent className="p-0">
@@ -25,7 +34,7 @@ export default function ProductList({ products, onEdit, onDelete, onToggleActive
                             <TableHead>零售價</TableHead>
                             <TableHead>經銷價</TableHead>
                             <TableHead>庫存</TableHead>
-                            <TableHead>上架</TableHead>
+                            <TableHead>狀態</TableHead>
                             <TableHead className="text-right">操作</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -57,15 +66,23 @@ export default function ProductList({ products, onEdit, onDelete, onToggleActive
                                     <TableCell>{product.stock}</TableCell>
 
                                     <TableCell>
-                                        <div className="flex items-center gap-2">
-                                            <Switch
-                                                checked={product.is_active}
-                                                onCheckedChange={(checked) => onToggleActive(product.id, checked)}
-                                            />
-                                            <Badge variant={product.is_active ? 'default' : 'secondary'}>
-                                                {product.is_active ? '上架中' : '已下架'}
-                                            </Badge>
-                                        </div>
+                                        <Select
+                                            value={product.status}
+                                            onValueChange={(value) => onChangeStatus(product.id, value as Product['status'])}
+                                        >
+                                            <SelectTrigger className="w-28">
+                                                <Badge variant={statusVariants[product.status]}>
+                                                    {product.status}
+                                                </Badge>
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {statusOptions.map((status) => (
+                                                    <SelectItem key={status} value={status}>
+                                                        <Badge variant={statusVariants[status]}>{status}</Badge>
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
                                     </TableCell>
 
                                     <TableCell className="text-right">
