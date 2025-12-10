@@ -15,12 +15,12 @@ interface ProductSearchFiltersProps {
   setSelectedModels: (value: string[]) => void; // ✅ 修正命名
   selectedSeries: string[];
   setSelectedSeries: (value: string[]) => void;
-  selectedRemarks: string[];
-  setSelectedRemarks: (value: string[]) => void;
+  selectedcolors: string[];
+  setSelectedcolors: (value: string[]) => void;
   uniquevenders: string[];
   uniqueModels: string[];
   uniqueSeries: string[];
-  uniqueRemarks: string[];
+  uniquecolors: string[];
   clearAllFilters: () => void;
   isLoading?: boolean; // ✅ 新增載入狀態
 }
@@ -36,12 +36,12 @@ export const ProductSearchFilters = ({
   setSelectedModels, // ✅ 修正命名
   selectedSeries,
   setSelectedSeries,
-  selectedRemarks,
-  setSelectedRemarks,
+  selectedcolors,
+  setSelectedcolors,
   uniquevenders,
   uniqueModels,
   uniqueSeries,
-  uniqueRemarks,
+  uniquecolors,
   clearAllFilters,
   isLoading = false,
 }: ProductSearchFiltersProps) => {
@@ -71,17 +71,17 @@ export const ProductSearchFilters = ({
           <Filter className="w-4 h-4 mr-2" />
           進階篩選
           {selectedvenders.length + selectedModels.length + 
-           selectedSeries.length + selectedRemarks.length > 0 && (
+           selectedSeries.length + selectedcolors.length > 0 && (
             <Badge variant="destructive" className="ml-2 h-4 w-4">
               {selectedvenders.length + selectedModels.length + 
-               selectedSeries.length + selectedRemarks.length}
+               selectedSeries.length + selectedcolors.length}
             </Badge>
           )}
         </Button>
         {(selectedvenders.length > 0 ||
           selectedModels.length > 0 ||
           selectedSeries.length > 0 ||
-          selectedRemarks.length > 0) && (
+          selectedcolors.length > 0) && (
           <Button 
             variant="outline" 
             size="sm" 
@@ -129,11 +129,11 @@ export const ProductSearchFilters = ({
                 disabled={isLoading}
               />
               <MultiSelectDropdown
-                options={uniqueRemarks}
-                selected={selectedRemarks}
-                onChange={setSelectedRemarks}
+                options={uniquecolors}
+                selected={selectedcolors}
+                onChange={setSelectedcolors}
                 label="備註"
-                placeholder={`選擇備註... (${uniqueRemarks.length} 個可用)`}
+                placeholder={`選擇備註... (${uniquecolors.length} 個可用)`}
                 disabled={isLoading}
               />
             </>

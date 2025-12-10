@@ -1,33 +1,19 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { ShoppingCart } from "lucide-react";
-
-interface Product {
-  id: number;
-  code: string;
-  vender: string;
-  model: string;
-  name: string;
-  series: string;
-  remark: string;
-  priceDistribution: number;
-}
+import { Product } from "../../types";
 
 interface ProductGridViewProps {
   products: Product[];
   onSelectProduct: (product: Product, quantity: number) => void;
 }
 
-export const ProductGridView = ({
-  products,
-  onSelectProduct,
-}: ProductGridViewProps) => {
+export const ProductGridView = ({ products, onSelectProduct }: ProductGridViewProps) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-4">
       {products.map((product) => (
         <Card
-          key={product.code}
+          key={product.id}
           className="hover:shadow-lg transition-shadow cursor-pointer"
           onClick={() => onSelectProduct(product, 1)}
         >
@@ -36,23 +22,15 @@ export const ProductGridView = ({
               <div className="flex items-start">
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <h4 className="font-medium text-xs">
-                      {product.vender} • {product.series}
-                    </h4>
+                    <h4 className="font-medium text-xs">{product.brand} • {product.series}</h4>
                   </div>
-                  <p className="text-s font-bold text-muted-foreground mt-1">
-                    {product.model}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {product.remark}
-                  </p>
+                  <p className="text-s font-bold text-muted-foreground mt-1">{product.model}</p>
+                  <p className="text-sm text-muted-foreground">{product.color}</p>
                 </div>
               </div>
               <div className="flex items-center justify-between pt-2 border-t">
-                <span className="text-lg font-bold text-primary">
-                  ${product.priceDistribution}
-                </span>
-                <Button size="sm" variant="secondary">
+                <span className="text-lg font-bold text-primary">${product.priceDistribution}</span>
+                <Button size="sm" variant="secondary" onClick={() => onSelectProduct(product, 1)}>
                   <ShoppingCart className="w-4 h-4 mr-1" />
                   加入
                 </Button>

@@ -75,12 +75,20 @@ export default function OrderForm({ docId, type, onClose, onSubmitSuccess }: Pro
   };
 
   // 舊的 addItem 函數現在由側邊欄選中產品後觸發
-  const handleSelectProduct = (item: { name: string; price: number }) => {
+  const handleSelectProduct = (product: Product, quantity: number) => {
     setFormData(prev => ({
       ...prev,
-      items: [...prev.items, { name: item.name, qty: 1, price: item.price }], // 數量預設為 1
+      items: [
+        ...prev.items,
+        {
+          name: product.name,
+          qty: quantity,
+          price: product.price ?? 0, // Product.price 可能是 optional
+        },
+      ],
     }));
   };
+
 
   // 移除舊的 addItem 函數
 
