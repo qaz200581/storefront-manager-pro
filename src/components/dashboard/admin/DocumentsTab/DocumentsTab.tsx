@@ -1,29 +1,23 @@
-// components/admin/DocumentsTab/DocumentsTab.tsx
 import { useState, useEffect } from 'react';
 import { X, ClipboardCheck, ShoppingCart, Package, CirclePlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
+import OrderForm from './OrderForm/OrderForm';
 
-import SalesOrderForm from './SalesOrderForm/SalesOrderForm';
-import PurchaseOrderForm from './PurchaseOrderForm/PurchaseOrderForm';
-// import EditOrderForm from './EditOrderForm';
-
-type DocumentType = 'sales' | 'purchase' | 'edit-order';
+type DocumentType = 'sales' | 'purchase';
 
 interface OpenDocument {
   id: string;
   type: DocumentType;
   title: string;
-  orderId?: string;
 }
 
 export default function DocumentsTab() {
   const [openDocs, setOpenDocs] = useState<OpenDocument[]>([]);
   const [activeDocId, setActiveDocId] = useState<string | null>(null);
 
-  // 自動恢復上次未關閉的草稿（可選）
   useEffect(() => {
     const saved = localStorage.getItem('admin-open-docs');
     if (saved) {
@@ -34,7 +28,6 @@ export default function DocumentsTab() {
     }
   }, []);
 
-  // 每當 openDocs 變動就存入 localStorage
   useEffect(() => {
     if (openDocs.length > 0) {
       localStorage.setItem('admin-open-docs', JSON.stringify(openDocs));
@@ -43,18 +36,16 @@ export default function DocumentsTab() {
     }
   }, [openDocs]);
 
-  const openNewDocument = (type: DocumentType, orderId?: string) => {
+  const openNewDocument = (type: DocumentType) => {
     const titles: Record<DocumentType, string> = {
       sales: '新增銷售單',
       purchase: '新增訂單',
-      'edit-order': orderId ? `修改訂單 #${orderId}` : '修改訂單',
     };
 
     const newDoc: OpenDocument = {
-      id: crypto.randomUUID(),        // 完全零依賴！
+      id: crypto.randomUUID(),
       type,
       title: titles[type],
-      orderId,
     };
 
     setOpenDocs(prev => [...prev, newDoc]);
@@ -73,7 +64,6 @@ export default function DocumentsTab() {
     const map = {
       sales: <ClipboardCheck className="w-4 h-4" />,
       purchase: <ShoppingCart className="w-4 h-4" />,
-      'edit-order': <Package className="w-4 h-4" />,
     };
     return map[type];
   };
@@ -128,19 +118,15 @@ export default function DocumentsTab() {
           {openDocs.map(doc => (
             <TabsContent key={doc.id} value={doc.id} className="mt-4">
               <Card className="p-6 min-h-[600px]">
-                {doc.type === 'sales' && (
-                  <SalesOrderForm
-                    docId={doc.id}
-                    onClose={() => closeDocument(doc.id)}
-                    onSubmitSuccess={() => {
-                      toast.success('銷售單已建立');
-                      closeDocument(doc.id);
-                    }}
-                  />
-                )}
-                {doc.type === 'purchase' && (
-                  <PurchaseOrderForm docId={doc.id} onClose={() => closeDocument(doc.id)} />
-                )}
+                <OrderForm
+                  docId={doc.id}
+                  type={doc.type}
+                  onClose={() => closeDocument(doc.id)}
+                  onSubmitSuccess={() => {
+                    toast.success(`${doc.type === 'sales' ? '銷售單' : '訂單'}已建立`);
+                    closeDocument(doc.id);
+                  }}
+                />
               </Card>
             </TabsContent>
           ))}

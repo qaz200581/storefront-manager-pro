@@ -9,7 +9,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Order } from './types';
-import { ProductSidebar } from '../ProductSelectSideBar/ProductSelectSidebar';
 interface OrdersTabProps {
   orders: Order[];
 }

@@ -1,4 +1,3 @@
-// ProductForm.tsx
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,7 +6,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ProductFormData, Product } from '@/components/dashboard/admin/types';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import TableSettings from './ProductTableForm';
 
 interface ProductFormProps {
     isDialogOpen: boolean;
@@ -60,11 +58,11 @@ export default function ProductForm({
                                 <Input
                                     value={productForm.brand}
                                     onChange={(e) => setProductForm({ ...productForm, brand: e.target.value })}
-                                    placeholder="輸入產品名稱"
+                                    placeholder="輸入產品品牌"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label>產品系列 *</Label>
+                                <Label>產品系列</Label>
                                 <Input
                                     value={productForm.series}
                                     onChange={(e) => setProductForm({ ...productForm, series: e.target.value })}
@@ -72,7 +70,7 @@ export default function ProductForm({
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label>產品型號 *</Label>
+                                <Label>產品型號</Label>
                                 <Input
                                     value={productForm.model}
                                     onChange={(e) => setProductForm({ ...productForm, model: e.target.value })}
@@ -80,7 +78,7 @@ export default function ProductForm({
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label>產品顏色 *</Label>
+                                <Label>產品顏色</Label>
                                 <Input
                                     value={productForm.color}
                                     onChange={(e) => setProductForm({ ...productForm, color: e.target.value })}
@@ -178,10 +176,37 @@ export default function ProductForm({
                             </Select>
                         </div>
 
-                        <TableSettings
-                            tableSettings={productForm.table_settings}
-                            onUpdate={(settings) => setProductForm({ ...productForm, table_settings: settings })}
-                        />
+                        <div className="border-t pt-4 space-y-4">
+                            <h4 className="font-medium">表格式下單設定</h4>
+                            <div className="grid grid-cols-1 gap-4">
+                                <div className="space-y-2">
+                                    <Label>表格標題</Label>
+                                    <Input
+                                        value={productForm.table_title}
+                                        onChange={(e) => setProductForm({ ...productForm, table_title: e.target.value })}
+                                        placeholder="例：尺寸規格表"
+                                    />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label>列標題</Label>
+                                        <Input
+                                            value={productForm.table_row_title}
+                                            onChange={(e) => setProductForm({ ...productForm, table_row_title: e.target.value })}
+                                            placeholder="例：顏色"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>欄標題</Label>
+                                        <Input
+                                            value={productForm.table_col_title}
+                                            onChange={(e) => setProductForm({ ...productForm, table_col_title: e.target.value })}
+                                            placeholder="例：尺寸"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                         <Button onClick={onSubmit} className="w-full">
                             {editingProduct ? '更新產品' : '新增產品'}

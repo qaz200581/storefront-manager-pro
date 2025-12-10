@@ -1,27 +1,19 @@
-
-// ProductList.tsx
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Edit, Trash2 } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Product } from '@/components/dashboard/admin/types';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 
 interface ProductListProps {
     products: Product[];
     onEdit: (product: Product) => void;
     onDelete: (id: string) => void;
-    onChangeState: (productId: string, newState: Product['status']) => void;
+    onToggleActive: (productId: string, isActive: boolean) => void;
 }
-const statusVariants: Record<Product['status'], 'default' | 'secondary' | 'destructive' | 'outline'> = {
-    '上架中': 'default',
-    '售完停產': 'destructive',
-    '預購中': 'outline',
-    '停產': 'secondary',
-};
 
-export default function ProductList({ products, onEdit, onDelete, onChangeState }: ProductListProps) {
+export default function ProductList({ products, onEdit, onDelete, onToggleActive }: ProductListProps) {
     return (
         <Card>
             <CardContent className="p-0">
@@ -33,7 +25,7 @@ export default function ProductList({ products, onEdit, onDelete, onChangeState 
                             <TableHead>零售價</TableHead>
                             <TableHead>經銷價</TableHead>
                             <TableHead>庫存</TableHead>
-                            <TableHead>狀態</TableHead>
+                            <TableHead>上架</TableHead>
                             <TableHead className="text-right">操作</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -65,29 +57,16 @@ export default function ProductList({ products, onEdit, onDelete, onChangeState 
                                     <TableCell>{product.stock}</TableCell>
 
                                     <TableCell>
-                                        <Select
-                                            value={product.status}
-                                            onValueChange={(value) => onChangeState(product.id, value as Product['status'])}
-                                        >
-                                            <SelectTrigger className="w-28">
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {Object.keys(statusVariants).map((status) => (
-                                                    <SelectItem key={status} value={status}>
-                                                        {status}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
+                                        <div className="flex items-center gap-2">
+                                            <Switch
+                                                checked={product.is_active}
+                                                onCheckedChange={(checked) => onToggleActive(product.id, checked)}
+                                            />
+                                            <Badge variant={product.is_active ? 'default' : 'secondary'}>
+                                                {product.is_active ? '上架中' : '已下架'}
+                                            </Badge>
+                                        </div>
                                     </TableCell>
-
-                                    <TableCell>
-                                        <Badge variant={statusVariants[product.status]}>
-                                            {product.status}
-                                        </Badge>
-                                    </TableCell>
-
 
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
