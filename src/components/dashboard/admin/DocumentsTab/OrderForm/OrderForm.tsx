@@ -6,7 +6,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { Trash2, Plus } from 'lucide-react';
-import ProductSelectorSidebar from '../../../share/ProductsSelectSidebar/ProductSelectorSidebar';
+import ProductSelectorSidebar from '@/components/dashboard/share/ProductsSelectSidebar/ProductSelectorSidebar';
+import {Product} from '@/components/dashboard/share/types';
 const STORAGE_KEY = 'order-draft-';
 
 interface OrderItem {
@@ -87,6 +88,7 @@ export default function OrderForm({ docId, type, onClose, onSubmitSuccess }: Pro
         },
       ],
     }));
+    toast.info('已添加'+ product.name +'到訂單');
   };
 
 

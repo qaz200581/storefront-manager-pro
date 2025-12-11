@@ -30,10 +30,18 @@ export const ProductGridView = ({ products, onSelectProduct }: ProductGridViewPr
               </div>
               <div className="flex items-center justify-between pt-2 border-t">
                 <span className="text-lg font-bold text-primary">${product.priceDistribution}</span>
-                <Button size="sm" variant="secondary" onClick={() => onSelectProduct(product, 1)}>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSelectProduct(product, 1);
+                  }}
+                >
                   <ShoppingCart className="w-4 h-4 mr-1" />
                   加入
                 </Button>
+
               </div>
             </div>
           </CardContent>

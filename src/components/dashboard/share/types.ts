@@ -6,6 +6,7 @@ export interface Product {
   brand?: string;           // 廠商
   model?: string;            // 型號
   series?: string;           // 系列
+  price: number;           // 售價
   color?: string;           // 備註
   priceDistribution?: number; // 價格
   tableTitle?: string;       // table 顯示標題（可多值）

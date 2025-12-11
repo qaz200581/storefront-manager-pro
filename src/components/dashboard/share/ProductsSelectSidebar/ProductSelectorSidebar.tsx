@@ -9,23 +9,9 @@ import { ProductSearchFilters } from './ProductSelect/ProductSearchFilters';
 import { Grid, List } from 'lucide-react';
 import { ProductGridView } from "./ProductSelect/ProductGridView";
 import { ProductTableView } from "./ProductSelect/ProductTableView";
-import { ViewMode } from '../types';
+import { ViewMode ,Product} from '../types';
 
-interface Product {
-  id: number;
-  code?: string;
-  name: string;
-  price?: number;
-  status?: string;
-  vender?: string;
-  model?: string;
-  series?: string;
-  color?: string;
-  priceDistribution?: number;
-  tableTitle?: string;
-  tableRowTitle?: string;
-  tableColTitle?: string;
-}
+
 
 interface ProductSelectorProps {
   isOpen: boolean;
@@ -43,7 +29,7 @@ export default function ProductSelectorSidebar({ isOpen, onClose, onSelectProduc
 
   // 篩選狀態
   const [quickSearch, setQuickSearch] = useState("");
-  const [selectedvenders, setSelectedvenders] = useState<string[]>([]);
+  const [selectedbrands, setSelectedbrands] = useState<string[]>([]);
   const [selectedModels, setSelectedModels] = useState<string[]>([]);
   const [selectedSeries, setSelectedSeries] = useState<string[]>([]);
   const [selectedcolors, setSelectedcolors] = useState<string[]>([]);
@@ -97,7 +83,7 @@ export default function ProductSelectorSidebar({ isOpen, onClose, onSelectProduc
   // 清除所有篩選
   const clearAllFilters = useCallback(() => {
     setQuickSearch("");
-    setSelectedvenders([]);
+    setSelectedbrands([]);
     setSelectedModels([]);
     setSelectedSeries([]);
     setSelectedcolors([]);
@@ -124,15 +110,15 @@ export default function ProductSelectorSidebar({ isOpen, onClose, onSelectProduc
           setQuickSearch={setQuickSearch}
           showAdvancedFilters={showAdvancedFilters}
           setShowAdvancedFilters={setShowAdvancedFilters}
-          selectedvenders={selectedvenders}
-          setSelectedvenders={setSelectedvenders}
+          selectedbrands={selectedbrands}
+          setSelectedbrands={setSelectedbrands}
           selectedModels={selectedModels}
           setSelectedModels={setSelectedModels}
           selectedSeries={selectedSeries}
           setSelectedSeries={setSelectedSeries}
           selectedcolors={selectedcolors}
           setSelectedcolors={setSelectedcolors}
-          uniquevenders={[...new Set(products.map(p => p.vender || ''))].filter(Boolean)}
+          uniquebrands={[...new Set(products.map(p => p.brand || ''))].filter(Boolean)}
           uniqueModels={[...new Set(products.map(p => p.model || ''))].filter(Boolean)}
           uniqueSeries={[...new Set(products.map(p => p.series || ''))].filter(Boolean)}
           uniquecolors={[...new Set(products.map(p => p.color || ''))].filter(Boolean)}
