@@ -1,10 +1,6 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Input } from '@/components/ui/input';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { toast } from 'sonner';
 import { ProductSearchFilters } from './ProductSelect/ProductSearchFilters';
 import { Grid, List } from 'lucide-react';
 import { ProductGridView } from "./ProductSelect/ProductGridView";
@@ -42,7 +38,7 @@ export default function ProductSelectorSidebar({ isOpen, onClose, onSelectProduc
   useEffect(() => {
     setSearch(quickSearch);
   }, [quickSearch, setSearch]);
-  
+
   const products = useMemo(() => {
     return fetchedProducts.filter(p => {
       if (selectedbrands.length && !selectedbrands.includes(p.brand)) return false;
@@ -58,6 +54,25 @@ export default function ProductSelectorSidebar({ isOpen, onClose, onSelectProduc
     selectedSeries,
     selectedcolors,
   ]);
+  const uniquebrandsOptions = useMemo(
+    () => [...new Set(fetchedProducts.map(p => p.brand || ''))].filter(Boolean),
+    [fetchedProducts] // 應基於所有產品
+  );
+
+  const uniqueModelsOptions = useMemo(
+    () => [...new Set(fetchedProducts.map(p => p.model || ''))].filter(Boolean),
+    [fetchedProducts] // 應基於所有產品
+  );
+
+  const uniqueSeriesOptions = useMemo(
+    () => [...new Set(fetchedProducts.map(p => p.series || ''))].filter(Boolean),
+    [fetchedProducts] // 應基於所有產品
+  );
+
+  const uniquecolorsOptions = useMemo(
+    () => [...new Set(fetchedProducts.map(p => p.color || ''))].filter(Boolean),
+    [fetchedProducts] // 應基於所有產品
+  );
 
   // 清除所有篩選
   const clearAllFilters = useCallback(() => {
@@ -97,10 +112,10 @@ export default function ProductSelectorSidebar({ isOpen, onClose, onSelectProduc
           setSelectedSeries={setSelectedSeries}
           selectedcolors={selectedcolors}
           setSelectedcolors={setSelectedcolors}
-          uniquebrands={[...new Set(products.map(p => p.brand || ''))].filter(Boolean)}
-          uniqueModels={[...new Set(products.map(p => p.model || ''))].filter(Boolean)}
-          uniqueSeries={[...new Set(products.map(p => p.series || ''))].filter(Boolean)}
-          uniquecolors={[...new Set(products.map(p => p.color || ''))].filter(Boolean)}
+          uniquebrands={uniquebrandsOptions}
+          uniqueModels={uniqueModelsOptions}
+          uniqueSeries={uniqueSeriesOptions}
+          uniquecolors={uniquecolorsOptions}
           clearAllFilters={clearAllFilters}
           isLoading={loading}
         />

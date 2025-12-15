@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Product } from "../../../types";
 import { ProductTableButton } from "./ProductTableButton";
 import { ProductTableInput } from "./ProductTableInput";
-import { IdCardIcon } from "lucide-react";
+
 
 interface ProductTableViewProps {
   products: Product[];

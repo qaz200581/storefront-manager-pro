@@ -7,9 +7,8 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { Trash2, Plus } from 'lucide-react';
 import ProductSelectorSidebar from '@/components/dashboard/share/ProductsSelectSidebar/ProductSelectorSidebar';
-import { Product } from '@/components/dashboard/share/types';
+import {Product} from '@/components/dashboard/share/types';
 import FormProductsList from '@/components/dashboard/share/FormProductsList/FormProductsList';
-
 const STORAGE_KEY = 'order-draft-';
 
 interface OrderItem {
@@ -78,15 +77,7 @@ export default function OrderForm({ docId, type, onClose, onSubmitSuccess }: Pro
   };
 
   // 舊的 addItem 函數現在由側邊欄選中產品後觸發
-  const handleSelectProduct = (productId: string, quantity: number) => {
-    // 從 fetchedProducts 找完整產品資料
-    const product = fetchedProducts.find(p => p.id === productId);
-
-    if (!product) {
-      toast.error('找不到產品資料');
-      return;
-    }
-
+  const handleSelectProduct = (product: Product, quantity: number) => {
     setFormData(prev => ({
       ...prev,
       items: [
@@ -94,12 +85,11 @@ export default function OrderForm({ docId, type, onClose, onSubmitSuccess }: Pro
         {
           name: product.name,
           qty: quantity,
-          price: product.price ?? 0,
+          price: product.price ?? 0, // Product.price 可能是 optional
         },
       ],
     }));
-
-    toast.info(`已添加 ${product.name} 到訂單`);
+    toast.info('已添加'+ product.name +'到訂單');
   };
 
 
@@ -204,7 +194,7 @@ export default function OrderForm({ docId, type, onClose, onSubmitSuccess }: Pro
           rows={3}
         />
       </div>
-      <FormProductsList products={[]} onSelectProduct={handleSelectProduct} />
+        <FormProductsList products={[]} onSelectProduct={handleSelectProduct}/>
 
       <div className="flex justify-end gap-3">
         <Button variant="outline" onClick={handleClose}>
