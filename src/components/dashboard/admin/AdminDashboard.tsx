@@ -97,7 +97,7 @@ export default function AdminDashboard() {
         <AdminStatsCards stats={stats} />
 
         <Tabs defaultValue="products" className="space-y-4">
-          <TabsList className="w-full md:w-auto">
+          <TabsList className="w-full md:w-auto overflow-x-auto justify-start">
             <TabsTrigger value="document" className="flex-1 md:flex-none">
               <CirclePlus className="w-4 h-4 mr-2" />
               新增
