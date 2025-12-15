@@ -18,7 +18,8 @@ interface Product {
   name: string;
   series: string;
   remark: string;
-  priceDistribution: number;
+  unit: string;
+  price: number;
   table_settings?: any[];
   tableTitle?: string;
   tableRowTitle?: string;
@@ -35,7 +36,8 @@ interface GroupedProduct {
   series: string;
   vender: string;
   remark: string;
-  priceDistribution: number;
+  unit: string;
+  price: number;
   productId: number;
   tableTitle: string; // 改為陣列以儲存多個 tableTitle
   tableRowTitle: string; // 改為陣列以儲存多個 tableRowTitle
@@ -66,7 +68,8 @@ interface GroupedProduct {
           series: product.series,
           vender: product.vender,
           remark: product.remark,
-          priceDistribution: product.priceDistribution,
+          price: product.price,
+          unit: product.unit,
           productId: product.id,
           tableTitle: title,
           tableRowTitle: product.tableRowTitle,
@@ -141,25 +144,7 @@ interface GroupedProduct {
   return (
     <div className="space-y-4">
       {/* 模式切換 */}
-      <div className="flex items-center justify-between sticky top-0 bg-background z-20 py-3 px-4 border-b shadow-sm">
-        <label className="inline-flex items-center cursor-pointer">
-          <input
-            type="checkbox"
-            checked={showAsButton}
-            onChange={(e) => setShowAsButton(e.target.checked)}
-            className="sr-only peer"
-          />
-          <div className="relative w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-blue-600"></div>
-          <span className="ms-3 text-sm font-medium">
-            {showAsButton ? "切換輸入" : "切換按鈕"}
-          </span>
-        </label>
-        {!showAsButton && (
-          <Button onClick={submitToList} size="sm">
-            確認
-          </Button>
-        )}
-      </div>
+
 
       {/* 各表格區塊 */}
       {Object.entries(groupedProducts).map(([tableTitle, list]) => {
@@ -201,7 +186,7 @@ interface GroupedProduct {
                                     onClick={() => handleButtonClick(product.productId)}
                                     className="w-full"
                                   >
-                                    {product.priceDistribution}
+                                    {product.price}
                                   </Button>
                                 ) : (
                                   <Input
@@ -234,7 +219,7 @@ interface GroupedProduct {
                                 }
                                 className="w-full"
                               >
-                                {list.find((p) => p.tableRowTitle.includes(row))!.priceDistribution}
+                                {list.find((p) => p.tableRowTitle.includes(row))!.price}
                               </Button>
                             ) : (
                               <Input

@@ -29,7 +29,7 @@ export const ProductGridView = ({ products, onSelectProduct }: ProductGridViewPr
                 </div>
               </div>
               <div className="flex items-center justify-between pt-2 border-t">
-                <span className="text-lg font-bold text-primary">${product.priceDistribution}</span>
+                <span className="text-lg font-bold text-primary">${product.price}</span>
                 <Button
                   size="sm"
                   variant="secondary"

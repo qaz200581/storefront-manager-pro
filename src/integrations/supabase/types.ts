@@ -166,6 +166,21 @@ export type Database = {
           },
         ]
       }
+      app_metadata: {
+        Row: {
+          key: string
+          last_updated_at: string
+        }
+        Insert: {
+          key: string
+          last_updated_at?: string // 因為預設值是 now()，所以是可選的
+        }
+        Update: {
+          key?: string
+          last_updated_at?: string
+        }
+        Relationships: [] // 這個表格沒有外部關聯
+      }
       profiles: {
         Row: {
           address: string | null

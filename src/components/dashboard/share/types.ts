@@ -1,16 +1,29 @@
 export type ViewMode = "grid" | "table";
+
 export interface Product {
-  id: number;                // 唯一 ID
-  code?: string;              // 產品代碼
-  name: string;              // 產品名稱
-  brand?: string;           // 廠商
-  model?: string;            // 型號
-  series?: string;           // 系列
-  price: number;           // 售價
-  color?: string;           // 備註
-  priceDistribution?: number; // 價格
-  tableTitle?: string;       // table 顯示標題（可多值）
-  tableRowTitle?: string;    // table 列標題（可多值）
-  tableColTitle?: string;    // table 欄標題（可多值）
-  table_settings?: any[];    // table 設定（可多值）
+  id: string;
+  name: string;
+  brand?: string | null;
+  series?: string | null;
+  model?: string | null;
+  color?: string | null;
+  description: string | null;
+  price: number;
+  retail_price?: number | null;
+  barcode?: string | null;
+  dealer_price?: number | null;
+  unit: string;
+  stock: number;
+  image_url: string | null;
+  status: '上架中' |'售完停產' | '預購中' | '停產';
+  category: string | null;
+  parent_product_id: string | null;
+  table_settings?: {
+    id: string;
+    table_title: string;
+    table_row_title: string;
+    table_col_title: string;
+  }[] | null;
+  created_at: string;
+  updated_at: string;
 }

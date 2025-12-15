@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import ProductForm from "./ProductsForm/ProductsForm";
 import ProductList from "./ProductsList/ProductList";
-import { Product, ProductFormData } from "@/components/dashboard/admin/types";
-
+import {  ProductFormData } from "@/components/dashboard/admin/types";
+import { Product } from "@/components/dashboard/share/types";
 const initialProductForm: ProductFormData = {
   name: "",
   brand: "",
@@ -167,11 +167,11 @@ export default function ProductsTab() {
     fetchProducts();
   };
 
-  const handleChangeStatus = async (productId: string, newState: Product['status']) => {
+  const handleChangeStatus = async (id: string, newState: Product['status']) => {
     const { error } = await supabase
       .from('products')
       .update({ status: newState })
-      .eq('id', productId);
+      .eq('id', id);
 
     if (error) {
       toast.error('更新狀態失敗');

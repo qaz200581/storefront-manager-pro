@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Product } from "../../../types";
 import { ProductTableButton } from "./ProductTableButton";
 import { ProductTableInput } from "./ProductTableInput";
+import { IdCardIcon } from "lucide-react";
 
 interface ProductTableViewProps {
   products: Product[];
@@ -75,11 +76,11 @@ export const ProductTableView = ({ products, onSelectProduct }: ProductTableView
 
   const submitToList = () => {
     let count = 0;
-    Object.entries(editableData).forEach(([productId, value]) => {
+    Object.entries(editableData).forEach(([id, value]) => {
       const qty = parseInt(value);
       if (value && !isNaN(qty) && qty > 0) {
         // 修正：使用 foundProduct 避免變數名稱衝突
-        const foundProduct = products.find((p) => p.id === parseInt(productId));
+        const foundProduct = products.find((p) => p.id === (id));
         if (foundProduct) {
           onSelectProduct(foundProduct, qty);
           count++;

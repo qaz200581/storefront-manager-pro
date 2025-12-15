@@ -10,7 +10,7 @@ import { Grid, List } from 'lucide-react';
 import { ProductGridView } from "./ProductSelect/ProductGridView";
 import { ProductTableView } from "./ProductSelect/ProductTableView/ProductTableView";
 import { ViewMode, Product } from '../types';
-
+import { useProductFetcher } from '@/components/dashboard/share/useProductFetcher';
 
 
 interface ProductSelectorProps {
@@ -20,66 +20,44 @@ interface ProductSelectorProps {
 }
 
 export default function ProductSelectorSidebar({ isOpen, onClose, onSelectProduct }: ProductSelectorProps) {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [search, setSearch] = useState('');
-  const [loading, setLoading] = useState(false);
+  const {
+    products: fetchedProducts,
+    isLoading: loading,
+    search,
+    setSearch,
+  } = useProductFetcher(isOpen);
 
   // 顯示模式
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
 
   // 篩選狀態
   const [quickSearch, setQuickSearch] = useState("");
+
   const [selectedbrands, setSelectedbrands] = useState<string[]>([]);
   const [selectedModels, setSelectedModels] = useState<string[]>([]);
   const [selectedSeries, setSelectedSeries] = useState<string[]>([]);
   const [selectedcolors, setSelectedcolors] = useState<string[]>([]);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
-  // 產品載入
   useEffect(() => {
-    if (!isOpen) return;
-
-    const fetchProducts = async () => {
-      setLoading(true);
-
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .neq('status', '停產')
-        .ilike('name', `%${search}%`)
-        .order('name');
-
-      if (error) {
-        toast.error('無法載入產品列表');
-        console.error(error);
-        setProducts([]);
-      } else {
-        // 將資料整理成 Grid / Table 可用格式
-        const mapped = (data || []).map((p: any) => ({
-          id: p.id,
-          code: p.code || '',
-          name: p.name,
-          price: p.price || 0,
-          priceDistribution: p.price || 0,
-          status: p.status,
-          brand: p.brand || '',
-          model: p.model || '',
-          series: p.series || '',
-          color: p.color || '',
-          table_settings: p.table_settings || [],
-          tableTitle: p.tableTitle || '',
-          tableRowTitle: p.tableRowTitle || '',
-          tableColTitle: p.tableColTitle || '',
-        }));
-        setProducts(mapped);
-      }
-
-      setLoading(false);
-    };
-
-    const timer = setTimeout(fetchProducts, 300);
-    return () => clearTimeout(timer);
-  }, [search, isOpen]);
+    setSearch(quickSearch);
+  }, [quickSearch, setSearch]);
+  
+  const products = useMemo(() => {
+    return fetchedProducts.filter(p => {
+      if (selectedbrands.length && !selectedbrands.includes(p.brand)) return false;
+      if (selectedModels.length && !selectedModels.includes(p.model)) return false;
+      if (selectedSeries.length && !selectedSeries.includes(p.series)) return false;
+      if (selectedcolors.length && !selectedcolors.includes(p.color)) return false;
+      return true;
+    });
+  }, [
+    fetchedProducts,
+    selectedbrands,
+    selectedModels,
+    selectedSeries,
+    selectedcolors,
+  ]);
 
   // 清除所有篩選
   const clearAllFilters = useCallback(() => {

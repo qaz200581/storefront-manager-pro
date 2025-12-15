@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { ProductSelectorSidebar } from '@/components/dashboard/share/ProductsSelectSidebar/ProductSelectorSidebar';
+import ProductSelectorSidebar from '@/components/dashboard/share/ProductsSelectSidebar/ProductSelectorSidebar';
 import { Cog,ChevronRight ,Package} from 'lucide-react';
 const STORAGE_KEY = 'sales-draft-';
 
