@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Trash2, Plus } from 'lucide-react';
 import ProductSelectorSidebar from '@/components/dashboard/share/ProductsSelectSidebar/ProductSelectorSidebar';
 import {Product} from '@/components/dashboard/share/types';
+import FormProductsList from '@/components/dashboard/share/FormProductsList/FormProductsList';
 const STORAGE_KEY = 'order-draft-';
 
 interface OrderItem {
@@ -193,6 +194,7 @@ export default function OrderForm({ docId, type, onClose, onSubmitSuccess }: Pro
           rows={3}
         />
       </div>
+        <FormProductsList products={[]} onSelectProduct={handleSelectProduct}/>
 
       <div className="flex justify-end gap-3">
         <Button variant="outline" onClick={handleClose}>

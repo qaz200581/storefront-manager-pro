@@ -8,8 +8,8 @@ import { toast } from 'sonner';
 import { ProductSearchFilters } from './ProductSelect/ProductSearchFilters';
 import { Grid, List } from 'lucide-react';
 import { ProductGridView } from "./ProductSelect/ProductGridView";
-import { ProductTableView } from "./ProductSelect/ProductTableView";
-import { ViewMode ,Product} from '../types';
+import { ProductTableView } from "./ProductSelect/ProductTableView/ProductTableView";
+import { ViewMode, Product } from '../types';
 
 
 
@@ -66,6 +66,7 @@ export default function ProductSelectorSidebar({ isOpen, onClose, onSelectProduc
           model: p.model || '',
           series: p.series || '',
           color: p.color || '',
+          table_settings: p.table_settings || [],
           tableTitle: p.tableTitle || '',
           tableRowTitle: p.tableRowTitle || '',
           tableColTitle: p.tableColTitle || '',

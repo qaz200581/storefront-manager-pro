@@ -93,7 +93,7 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-background">
       <AdminHeader onSignOut={signOut} />
 
-      <main className="container mx-auto px-4 py-6 space-y-6">
+<main className="container mx-auto px-4 py-6 space-y-6 **pt-32 pb-24 md:pt-8 md:pb-8**">
         <AdminStatsCards stats={stats} />
 
         <Tabs defaultValue="products" className="space-y-4">

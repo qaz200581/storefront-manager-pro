@@ -12,4 +12,5 @@ export interface Product {
   tableTitle?: string;       // table 顯示標題（可多值）
   tableRowTitle?: string;    // table 列標題（可多值）
   tableColTitle?: string;    // table 欄標題（可多值）
+  table_settings?: any[];    // table 設定（可多值）
 }

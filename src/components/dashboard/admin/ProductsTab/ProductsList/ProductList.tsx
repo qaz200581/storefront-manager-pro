@@ -1,6 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Edit, Trash2, Copy } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'; // 假設您的 Popover 組件路徑
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Product } from '@/components/dashboard/admin/types';
@@ -11,18 +12,19 @@ interface ProductListProps {
     onEdit: (product: Product) => void;
     onDelete: (id: string) => void;
     onChangeStatus: (productId: string, newStatus: Product['status']) => void;
+    onDuplicate: (product: Product) => void;
 }
 
-const statusOptions: Product['status'][] = ['上架中','售完停產' , '預購中', '停產'];
+const statusOptions: Product['status'][] = ['上架中', '售完停產', '預購中', '停產'];
 
-const statusVariants: Record<Product['status'], 'default'| 'destructive'  | 'destructive' | 'outline'> = {
+const statusVariants: Record<Product['status'], 'default' | 'destructive' | 'destructive' | 'outline'> = {
     '上架中': 'default',
-    '售完停產' : 'destructive',
+    '售完停產': 'destructive',
     '預購中': 'outline',
     '停產': 'destructive',
 };
 
-export default function ProductList({ products, onEdit, onDelete, onChangeStatus }: ProductListProps) {
+export default function ProductList({ products, onEdit, onDelete, onChangeStatus, onDuplicate }: ProductListProps) {
     return (
         <Card>
             <CardContent className="p-0">
@@ -86,14 +88,44 @@ export default function ProductList({ products, onEdit, onDelete, onChangeStatus
                                     </TableCell>
 
                                     <TableCell className="text-right">
-                                        <div className="flex justify-end gap-2">
-                                            <Button variant="ghost" size="icon" onClick={() => onEdit(product)}>
-                                                <Edit className="w-4 h-4" />
-                                            </Button>
-                                            <Button variant="ghost" size="icon" onClick={() => onDelete(product.id)}>
-                                                <Trash2 className="w-4 h-4 text-destructive" />
-                                            </Button>
-                                        </div>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                                    <span className="sr-only">產品操作</span>
+                                                    <MoreHorizontal className="h-4 w-4" />
+                                                </Button>
+                                            </PopoverTrigger>
+
+                                            {/* Popover 內容：使用 flex column 呈現按鈕組 */}
+                                            <PopoverContent className="w-40 p-2 space-y-1" align="end">
+                                                {/* 編輯按鈕 */}
+                                                <Button
+                                                    variant="ghost"
+                                                    className="w-full justify-start"
+                                                    onClick={() => onEdit(product)}
+                                                >
+                                                    <Edit className="mr-2 h-4 w-4" /> 編輯
+                                                </Button>
+
+                                                {/* 複製按鈕 */}
+                                                <Button
+                                                    variant="ghost"
+                                                    className="w-full justify-start"
+                                                    onClick={() => onDuplicate(product)}
+                                                >
+                                                    <Copy className="mr-2 h-4 w-4" /> 複製
+                                                </Button>
+
+                                                {/* 刪除按鈕 */}
+                                                <Button
+                                                    variant="destructive"
+                                                    className="w-full justify-start"
+                                                    onClick={() => onDelete(product.id)}
+                                                >
+                                                    <Trash2 className="mr-2 h-4 w-4" /> 刪除
+                                                </Button>
+                                            </PopoverContent>
+                                        </Popover>
                                     </TableCell>
                                 </TableRow>
                             ))

@@ -24,6 +24,7 @@ const initialProductForm: ProductFormData = {
   parent_product_id: "",
   table_settings: [],
 };
+
 export default function ProductsTab() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -44,7 +45,7 @@ export default function ProductsTab() {
       toast.error("無法載入產品");
       return;
     }
-
+    console.log("產品資料格式", data)
     setProducts(data || []);
   };
 
@@ -74,6 +75,8 @@ export default function ProductsTab() {
       category: productForm.category?.trim() || null,
       parent_product_id: productForm.parent_product_id || null,
       status: editingProduct ? editingProduct.status : '上架中',
+      table_settings: productForm.table_settings || [],
+      barcode: productForm.barcode?.trim() || null,
     };
 
     if (editingProduct) {
@@ -120,6 +123,34 @@ export default function ProductsTab() {
       stock: product.stock?.toString() || "",
       parent_product_id: product.parent_product_id || "",
       table_settings: product.table_settings || [],
+    });
+    setIsDialogOpen(true);
+  };
+
+  /**
+   * 💡 新增複製產品的邏輯
+   * 將現有產品資料載入表單，但清除其 ID，準備以新增模式提交
+   */
+  const handleDuplicate = (productToCopy: Product) => {
+    setEditingProduct(null); // 確保是新增模式
+    setProductForm({
+      // 繼承所有欄位
+      name: `${productToCopy.name} (副本)`, // 更改名稱以避免與舊產品混淆
+      brand: productToCopy.brand,
+      series: productToCopy.series,
+      model: productToCopy.model,
+      color: productToCopy.color,
+      category: productToCopy.category || "",
+      description: productToCopy.description || "",
+      price: productToCopy.price?.toString() || "",
+      retail_price: productToCopy.retail_price?.toString() || "",
+      dealer_price: productToCopy.dealer_price?.toString() || "",
+      unit: productToCopy.unit,
+      stock: productToCopy.stock?.toString() || "", // 庫存通常也需要重新確認
+      parent_product_id: productToCopy.parent_product_id || "",
+      table_settings: productToCopy.table_settings || [],
+      // 條碼通常是唯一的，強制用戶重新輸入或修改
+      barcode: productToCopy.barcode ? `${productToCopy.barcode}-COPY` : "",
     });
     setIsDialogOpen(true);
   };
@@ -184,6 +215,8 @@ export default function ProductsTab() {
         onEdit={handleEdit}
         onDelete={handleDelete}
         onChangeStatus={handleChangeStatus}
+        // 傳遞新的複製功能
+        onDuplicate={handleDuplicate}
       />
     </div>
   );
