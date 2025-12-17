@@ -1,3 +1,9 @@
+export interface TableSetting {
+  id: string;
+  table_title: string;
+  table_row_title: string;
+  table_col_title: string;
+}
 export interface Product {
   id: string;
   name: string;
@@ -16,12 +22,7 @@ export interface Product {
   status: '上架中' |'售完停產' | '預購中' | '停產';
   category: string | null;
   parent_product_id: string | null;
-  table_settings?: {
-    id: string;
-    table_title: string;
-    table_row_title: string;
-    table_col_title: string;
-  }[] | null;
+  table_settings?:TableSetting[];
   created_at: string;
   updated_at: string;
 }

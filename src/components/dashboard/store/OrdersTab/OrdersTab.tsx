@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Order } from './types';
+import { Order } from '../types';
 interface OrdersTabProps {
   orders: Order[];
 }

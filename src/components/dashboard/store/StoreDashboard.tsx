@@ -3,14 +3,14 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Package, ShoppingCart, History } from 'lucide-react';
+import { Package, ShoppingCart, History, Building2 } from 'lucide-react';
 
 import StoreHeader from './StoreHeader';
-import ProductsTab from './ProductsTab';
-import CartTab from './CartTab';
-import OrdersTab from './OrdersTab';
+import ProductsTab from './CartTab/ProductsTab';
+import CartTab from './CartTab/CartTab';
+import OrdersTab from './OrdersTab/OrdersTab';
 import { Product, CartItem, Order, Profile } from './types';
-
+import StoresTab from '@/components/dashboard/share/StoreTabs/StoresTab';
 export default function StoreDashboard() {
   const { signOut, user } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
@@ -43,15 +43,15 @@ export default function StoreDashboard() {
   const fetchProducts = async () => {
     console.log("載入產品中...")
     const { data, error } = await supabase
-      .from('products')
-      .select('*')
+      .from('products') // 在此處指定回傳資料的型別為 Product
+      .select<string, Product>('*')
       .order('created_at', { ascending: false });
-    
+
     if (error) {
       toast.error('無法載入產品');
       return;
     }
-
+    
     setProducts(data || []);
   };
 
@@ -168,7 +168,7 @@ export default function StoreDashboard() {
 
       <main className="container mx-auto px-4 py-6">
         <Tabs defaultValue="products" className="space-y-4">
-          <TabsList className="w-full md:w-auto">
+          <TabsList className="w-full md:w-full overflow-auto justify-start">
             <TabsTrigger value="products" className="flex-1 md:flex-none">
               <Package className="w-4 h-4 mr-2" />
               產品目錄
@@ -185,6 +185,18 @@ export default function StoreDashboard() {
             <TabsTrigger value="orders" className="flex-1 md:flex-none">
               <History className="w-4 h-4 mr-2" />
               訂單記錄
+            </TabsTrigger>
+            <TabsTrigger value="orders" className="flex-1 md:flex-none">
+              <History className="w-4 h-4 mr-2" />
+              銷售紀錄
+            </TabsTrigger>
+            <TabsTrigger value="orders" className="flex-1 md:flex-none">
+              <History className="w-4 h-4 mr-2" />
+              帳款管理
+            </TabsTrigger>
+            <TabsTrigger value="stores" className="flex-1 md:flex-none">
+              <Building2 className="w-4 h-4 mr-2" />
+              店家管理
             </TabsTrigger>
           </TabsList>
 
@@ -207,6 +219,9 @@ export default function StoreDashboard() {
 
           <TabsContent value="orders">
             <OrdersTab orders={orders} />
+          </TabsContent>
+          <TabsContent value="stores">
+            <StoresTab  />
           </TabsContent>
         </Tabs>
       </main>

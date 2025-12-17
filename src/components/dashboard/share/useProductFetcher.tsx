@@ -39,14 +39,16 @@ export function useProductFetcher(isOpen: boolean) {
         return;
       }
 
-      products = data as Product[];
+      products = (data as unknown) as Product[];
+
       localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
       if (remoteTimestamp) {
         localStorage.setItem(VERSION_CACHE_KEY, remoteTimestamp);
       }
     } else {
       const cached = localStorage.getItem(LOCAL_CACHE_KEY);
-      products = cached ? JSON.parse(cached) : [];
+      // 從 LocalStorage 取出時也需要斷言
+      products = cached ? (JSON.parse(cached) as Product[]) : [];
     }
 
     setAllProducts(products);

@@ -1,80 +1,138 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User, Session } from '@supabase/supabase-js';
+import {
+  useState,
+  useEffect,
+  createContext,
+  useContext,
+  ReactNode,
+} from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import type { Session, User } from '@supabase/supabase-js';
+import type { Tables } from '@/integrations/supabase/types';
 
 type UserRole = 'admin' | 'store' | null;
 
+/**
+ * 擴充後的 User 型別
+ */
+export type EnrichedUser = User & {
+  profile: Tables<'profiles'> | null;
+  accessibleStores: Array<{
+    role: Tables<'store_users'>['role'];
+    store: Pick<Tables<'stores'>, 'id' | 'name' | 'status'>;
+  }>;
+  isSuperAdmin: boolean;
+};
+
+/**
+ * Auth Context 型別
+ */
 interface AuthContextType {
-  user: User | null;
   session: Session | null;
-  role: UserRole;
+  user: EnrichedUser | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signUp: (email: string, password: string, storeName: string) => Promise<{ error: Error | null }>;
+  signUp: (
+    email: string,
+    password: string,
+    storeName: string
+  ) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+/**
+ * AuthProvider
+ */
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [role, setRole] = useState<UserRole>(null);
+  const [user, setUser] = useState<EnrichedUser | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchUserRole = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', userId)
-        .maybeSingle();
+  /**
+   * 取得完整用戶資料
+   */
+  const fetchUserDetails = async (baseUser: User): Promise<EnrichedUser> => {
+    const [profileRes, storeUsersRes, adminRoleRes] = await Promise.all([
+      supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', baseUser.id)
+        .single(),
 
-      if (error) {
-        console.error('Error fetching role:', error);
-        return null;
-      }
+      supabase
+        .from('store_users')
+        .select('role, stores(id, name, status)')
+        .eq('user_id', baseUser.id)
+        .eq('status', '啟用'),
 
-      return data?.role as UserRole;
-    } catch (err) {
-      console.error('Error in fetchUserRole:', err);
-      return null;
-    }
+      supabase.rpc('has_role', {
+        _role: 'admin',
+        _user_id: baseUser.id,
+      }),
+    ]);
+
+    if (profileRes.error) console.error(profileRes.error);
+    if (storeUsersRes.error) console.error(storeUsersRes.error);
+    if (adminRoleRes.error) console.error(adminRoleRes.error);
+
+    const accessibleStores =
+      storeUsersRes.data
+        ?.map((su) => {
+          // 增加一個型別檢查，確保 su.stores 是一個物件而不是 null
+          if (su.stores && typeof su.stores === 'object' && !Array.isArray(su.stores)) {
+            return {
+              store: su.stores as Pick<Tables<'stores'>, 'id' | 'name' | 'status'>,
+              role: su.role,
+            };
+          }
+          return null;
+        })
+        .filter((s): s is NonNullable<typeof s> => s !== null) ?? [];
+
+    return {
+      ...baseUser,
+      profile: profileRes.data,
+      accessibleStores,
+      isSuperAdmin: adminRoleRes.data === true,
+    };
   };
 
+  /**
+   * Auth state listener
+   */
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-
-        if (session?.user) {
-          setTimeout(() => {
-            fetchUserRole(session.user.id).then(setRole);
-          }, 0);
-        } else {
-          setRole(null);
-        }
-      }
-    );
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // 處理 session 變化的函式
+    const handleSessionChange = async (session: Session | null) => {
+      setLoading(true);
       setSession(session);
-      setUser(session?.user ?? null);
-
       if (session?.user) {
-        fetchUserRole(session.user.id).then((r) => {
-          setRole(r);
-          setLoading(false);
-        });
+        const enrichedUser = await fetchUserDetails(session.user);
+        setUser(enrichedUser);
       } else {
-        setLoading(false);
+        setUser(null);
       }
+      setLoading(false);
+    };
+
+    // 首次載入時取得 session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      handleSessionChange(session);
     });
 
-    return () => subscription.unsubscribe();
+    // 監聽後續的 auth 狀態變化
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      handleSessionChange(session);
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, []);
 
+  /**
+   * Auth actions
+   */
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -83,9 +141,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error };
   };
 
-  const signUp = async (email: string, password: string, storeName: string) => {
+  const signUp = async (
+    email: string,
+    password: string,
+    storeName: string
+  ) => {
     const redirectUrl = `${window.location.origin}/`;
-    
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -96,27 +158,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         },
       },
     });
+
     return { error };
   };
 
   const signOut = async () => {
     await supabase.auth.signOut();
-    setUser(null);
-    setSession(null);
-    setRole(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, role, loading, signIn, signUp, signOut }}>
+    <AuthContext.Provider
+      value={{
+        session,
+        user,
+        loading,
+        signIn,
+        signUp,
+        signOut,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 }
 
-export function useAuth() {
+/**
+ * useAuth Hook
+ */
+export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-}
+};

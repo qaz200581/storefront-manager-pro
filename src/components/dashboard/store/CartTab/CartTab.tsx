@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { ShoppingCart, Plus, Minus, Trash2 } from 'lucide-react';
-import { CartItem } from './types';
+import { CartItem } from '../types';
 
 interface CartTabProps {
   cart: CartItem[];

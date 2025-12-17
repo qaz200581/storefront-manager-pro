@@ -3,7 +3,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Settings, Package, ShoppingCart, Clipboard, ClipboardCheck ,CirclePlus} from 'lucide-react';
+import { Settings, Package, Building2, Clipboard, ClipboardCheck, CirclePlus } from 'lucide-react';
 
 import AdminHeader from './AdminHeader';
 import AdminStatsCards from './AdminStatsCards';
@@ -11,7 +11,7 @@ import ProductsTab from './ProductsTab/ProductsTab';
 import OrdersTab from './OrdersTab/OrdersTab';
 import DocumentsTab from './DocumentsTab/DocumentsTab'
 import { Order, Stats } from './types';
-
+import StoresTab from '@/components/dashboard/share/StoreTabs/StoresTab';
 export default function AdminDashboard() {
   const { signOut } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
@@ -93,19 +93,21 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-background">
       <AdminHeader onSignOut={signOut} />
 
-<main className="container mx-auto px-4 py-6 space-y-6 **pt-32 pb-24 md:pt-8 md:pb-8**">
+      <main className="container mx-auto px-4 py-6 space-y-6 **pt-32 pb-24 md:pt-8 md:pb-8**">
         <AdminStatsCards stats={stats} />
 
         <Tabs defaultValue="products" className="space-y-4">
-          <TabsList className="w-full md:w-auto overflow-x-auto justify-start">
+          <TabsList className="w-full md:w-full overflow-x-auto justify-start">
             <TabsTrigger value="document" className="flex-1 md:flex-none">
               <CirclePlus className="w-4 h-4 mr-2" />
               新增
             </TabsTrigger>
-            <TabsTrigger value="products" className="flex-1 md:flex-none">
-              <Package className="w-4 h-4 mr-2" />
-              產品管理
+            <TabsTrigger value="products" className="flex items-center gap-2">
+              <Package className="w-4 h-4" />
+              <span>產品管理</span>
             </TabsTrigger>
+
+
             <TabsTrigger value="orders" className="flex-1 md:flex-none">
               <Clipboard className="w-4 h-4 mr-2" />
 
@@ -119,7 +121,12 @@ export default function AdminDashboard() {
               <Settings className="w-4 h-4 mr-2" />
               設定管理
             </TabsTrigger>
+            <TabsTrigger value="stores" className="flex-1 md:flex-none">
+              <Building2 className="w-4 h-4 mr-2" />
+              店家管理
+            </TabsTrigger>
           </TabsList>
+
           <TabsContent value="document">
             <DocumentsTab />
           </TabsContent>
@@ -133,6 +140,10 @@ export default function AdminDashboard() {
               orders={orders}
               onUpdateStatus={handleUpdateOrderStatus}
             />
+          </TabsContent>
+
+          <TabsContent value="stores">
+            <StoresTab />
           </TabsContent>
         </Tabs>
       </main>

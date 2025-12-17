@@ -4,7 +4,7 @@ import AdminDashboard from '@/components/dashboard/admin/AdminDashboard';
 import StoreDashboard from '@/components/dashboard/store/StoreDashboard';
 
 export default function Dashboard() {
-  const { user, role, loading } = useAuth();
+  const { user, loading } = useAuth();
 
   if (loading) {
     return (
@@ -18,7 +18,9 @@ export default function Dashboard() {
     return <Navigate to="/auth" replace />;
   }
 
-  if (role === 'admin') {
+  // 根據 user 物件的 isSuperAdmin 屬性來判斷角色
+  // 如果是超級管理員，顯示 AdminDashboard
+  if (user.isSuperAdmin) {
     return <AdminDashboard />;
   }
 
