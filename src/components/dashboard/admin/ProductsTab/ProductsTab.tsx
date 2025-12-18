@@ -46,7 +46,8 @@ export default function ProductsTab() {
       return;
     }
     console.log("產品資料格式", data)
-    setProducts(data || []);
+    // Cast the data to Product[] to handle status type
+    setProducts((data as unknown as Product[]) || []);
   };
 
   const onResetForm = () => {

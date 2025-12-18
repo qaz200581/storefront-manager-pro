@@ -10,21 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toast } from "sonner";
-
-interface Product {
-  id: number;
-  code: string;
-  vender: string;
-  name: string;
-  series: string;
-  remark: string;
-  unit: string;
-  price: number;
-  table_settings?: any[];
-  tableTitle?: string;
-  tableRowTitle?: string;
-  tableColTitle?: string;
-}
+import { Product, TableSetting } from "@/components/dashboard/share/types";
 
 interface ProductTableViewProps {
   products: Product[];
@@ -32,64 +18,61 @@ interface ProductTableViewProps {
 }
 
 interface GroupedProduct {
-  code: string;
-  series: string;
-  vender: string;
-  remark: string;
-  unit: string;
+  productId: string;
+  name: string;
   price: number;
-  productId: number;
-  tableTitle: string; // 改為陣列以儲存多個 tableTitle
-  tableRowTitle: string; // 改為陣列以儲存多個 tableRowTitle
-  tableColTitle: string; // 改為陣列以儲存多個 tableColTitle
+  unit: string;
+  tableTitle: string;
+  tableRowTitle: string;
+  tableColTitle: string;
+  originalProduct: Product;
 }
 
- const FormProductsList = ({
+const FormProductsList = ({
   products,
   onSelectProduct,
 }: ProductTableViewProps) => {
   const [showAsButton, setShowAsButton] = useState(true);
   const [editableData, setEditableData] = useState<Record<string, string>>({});
 
-  // 按 tableTitle 分組產品，支援多值 tableTitle
+  // 按 tableTitle 分組產品
   const groupedProducts = useMemo(() => {
     const grouped: Record<string, GroupedProduct[]> = {};
 
     products.forEach((product) => {
-      const titles = product.tableTitle?.split(",").map((t) => t.trim()) || [];
-      const colTitles = product.tableColTitle?.split(",").map((r) => r.trim()) || [];
-      if (!titles.length) return;
-      for (let i=0; i < titles.length; i++) {
-        const title = titles[i];
-        const colTitle = colTitles[i];
+      const settings = product.table_settings || [];
+      if (settings.length === 0) return;
+      
+      settings.forEach((setting: TableSetting) => {
+        const title = setting.table_title;
+        if (!title) return;
+        
         if (!grouped[title]) grouped[title] = [];
         grouped[title].push({
-          code: product.code,
-          series: product.series,
-          vender: product.vender,
-          remark: product.remark,
+          productId: product.id,
+          name: product.name,
           price: product.price,
           unit: product.unit,
-          productId: product.id,
           tableTitle: title,
-          tableRowTitle: product.tableRowTitle,
-          tableColTitle: colTitle,
+          tableRowTitle: setting.table_row_title || '',
+          tableColTitle: setting.table_col_title || '',
+          originalProduct: product,
         });
-      }
+      });
     });
 
     return grouped;
-  }, [products]);7
+  }, [products]);
 
-  // 橫向欄位：表格第一列，支援多值 tableColTitle
-  const getUniqueCols = (products: GroupedProduct[]) =>
-    [...new Set(products.flatMap((p) => p.tableColTitle))].filter(Boolean);
+  // 橫向欄位：表格第一列
+  const getUniqueCols = (items: GroupedProduct[]) =>
+    [...new Set(items.map((p) => p.tableColTitle))].filter(Boolean);
 
-  // 縱向欄位：表格第一欄，支援多值 tableRowTitle
-  const getUniqueRows = (products: GroupedProduct[]) =>
-    [...new Set(products.flatMap((p) => p.tableRowTitle))].filter(Boolean);
+  // 縱向欄位：表格第一欄
+  const getUniqueRows = (items: GroupedProduct[]) =>
+    [...new Set(items.map((p) => p.tableRowTitle))].filter(Boolean);
 
-  // 取得某格對應產品，支援多值 tableRowTitle 和 tableColTitle
+  // 取得某格對應產品
   const getCellProduct = (
     tableTitle: string,
     row: string,
@@ -98,14 +81,14 @@ interface GroupedProduct {
     return (
       groupedProducts[tableTitle]?.find(
         (p) =>
-          p.tableRowTitle.includes(row) &&
-          (col ? p.tableColTitle.includes(col) : p.tableColTitle.length === 0)
+          p.tableRowTitle === row &&
+          (col ? p.tableColTitle === col : !p.tableColTitle)
       ) || null
     );
   };
 
   // 點擊按鈕加入單項
-  const handleButtonClick = (productId: number) => {
+  const handleButtonClick = (productId: string) => {
     const product = products.find((item) => item.id === productId);
     if (product) {
       onSelectProduct(product, 1);
@@ -119,8 +102,7 @@ interface GroupedProduct {
       const qty = parseInt(value);
 
       if (value && !isNaN(qty) && qty > 0) {
-        const product = products.find((item) => item.code === productId);
-        console.log(product);
+        const product = products.find((item) => item.id === productId);
         if (product) {
           onSelectProduct(product, qty);
           count++;
@@ -141,11 +123,12 @@ interface GroupedProduct {
     setEditableData((prev) => ({ ...prev, [productId]: value }));
   };
 
+  if (Object.keys(groupedProducts).length === 0) {
+    return null;
+  }
+
   return (
     <div className="space-y-4">
-      {/* 模式切換 */}
-
-
       {/* 各表格區塊 */}
       {Object.entries(groupedProducts).map(([tableTitle, list]) => {
         const cols = getUniqueCols(list);
@@ -175,25 +158,25 @@ interface GroupedProduct {
                       </TableCell>
                       {cols.length > 0 ? (
                         cols.map((col) => {
-                          const product = getCellProduct(tableTitle, row, col);
+                          const item = getCellProduct(tableTitle, row, col);
                           return (
                             <TableCell key={col} className="border text-center">
-                              {product ? (
+                              {item ? (
                                 showAsButton ? (
                                   <Button
                                     size="sm"
                                     variant="default"
-                                    onClick={() => handleButtonClick(product.productId)}
+                                    onClick={() => handleButtonClick(item.productId)}
                                     className="w-full"
                                   >
-                                    {product.price}
+                                    {item.price}
                                   </Button>
                                 ) : (
                                   <Input
                                     type="text"
-                                    value={editableData[product.code] || ""}
+                                    value={editableData[item.productId] || ""}
                                     onChange={(e) =>
-                                      handleInputChange(product.code, e.target.value)
+                                      handleInputChange(item.productId, e.target.value)
                                     }
                                     placeholder="數量"
                                     className="text-center"
@@ -207,31 +190,31 @@ interface GroupedProduct {
                         })
                       ) : (
                         <TableCell className="border text-center">
-                          {list.find((p) => p.tableRowTitle.includes(row)) ? (
+                          {list.find((p) => p.tableRowTitle === row) ? (
                             showAsButton ? (
                               <Button
                                 size="sm"
                                 variant="default"
                                 onClick={() =>
                                   handleButtonClick(
-                                    list.find((p) => p.tableRowTitle.includes(row))!.productId
+                                    list.find((p) => p.tableRowTitle === row)!.productId
                                   )
                                 }
                                 className="w-full"
                               >
-                                {list.find((p) => p.tableRowTitle.includes(row))!.price}
+                                {list.find((p) => p.tableRowTitle === row)!.price}
                               </Button>
                             ) : (
                               <Input
                                 type="text"
                                 value={
                                   editableData[
-                                    list.find((p) => p.tableRowTitle.includes(row))!.productId
+                                    list.find((p) => p.tableRowTitle === row)!.productId
                                   ] || ""
                                 }
                                 onChange={(e) =>
                                   handleInputChange(
-                                    String(list.find((p) => p.tableRowTitle === row)!.productId),
+                                    list.find((p) => p.tableRowTitle === row)!.productId,
                                     e.target.value
                                   )
                                 }
@@ -255,4 +238,5 @@ interface GroupedProduct {
     </div>
   );
 };
+
 export default FormProductsList;

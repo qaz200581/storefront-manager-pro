@@ -304,6 +304,24 @@ export type Database = {
         Args: { _user_id: string }
         Returns: string[]
       }
+      get_user_app_role: {
+        Args: { p_user_id: string }
+        Returns: Database["public"]["Enums"]["app_role"]
+      }
+      get_user_stores_with_roles: {
+        Args: { p_user_id: string }
+        Returns: {
+          address: string
+          created_at: string
+          id: string
+          name: string
+          parent_store_id: string
+          phone: string
+          status: string
+          updated_at: string
+          user_role: Database["public"]["Enums"]["store_role"]
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

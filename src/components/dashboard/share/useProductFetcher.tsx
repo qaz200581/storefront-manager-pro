@@ -15,41 +15,36 @@ export function useProductFetcher(isOpen: boolean) {
   const fetchAllProductsWithCacheValidation = useCallback(async () => {
     setLoading(true);
 
-    const { data: versionData } = await supabase
-      .from("app_metadata")
-      .select("last_updated_at")
-      .eq('key', 'products_version')
-      .single();
+    // Check local cache first
+    const cachedProducts = localStorage.getItem(LOCAL_CACHE_KEY);
+    const cachedTimestamp = localStorage.getItem(VERSION_CACHE_KEY);
+    const now = Date.now();
+    const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
-    const remoteTimestamp = versionData?.last_updated_at;
-    const localTimestamp = localStorage.getItem(VERSION_CACHE_KEY);
-
-    let products: Product[] = [];
-
-    if (!localTimestamp || (remoteTimestamp && remoteTimestamp > localTimestamp)) {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .neq('status', '停產')
-        .order('name');
-
-      if (error) {
-        toast.error('無法載入產品列表');
-        setLoading(false);
-        return;
-      }
-
-      products = (data as unknown) as Product[];
-
-      localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
-      if (remoteTimestamp) {
-        localStorage.setItem(VERSION_CACHE_KEY, remoteTimestamp);
-      }
-    } else {
-      const cached = localStorage.getItem(LOCAL_CACHE_KEY);
-      // 從 LocalStorage 取出時也需要斷言
-      products = cached ? (JSON.parse(cached) as Product[]) : [];
+    // Use cache if valid
+    if (cachedProducts && cachedTimestamp && (now - parseInt(cachedTimestamp)) < CACHE_TTL) {
+      setAllProducts(JSON.parse(cachedProducts) as Product[]);
+      setLoading(false);
+      return;
     }
+
+    // Fetch fresh data
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .neq('status', '停產')
+      .order('name');
+
+    if (error) {
+      toast.error('無法載入產品列表');
+      setLoading(false);
+      return;
+    }
+
+    const products = (data as unknown) as Product[];
+
+    localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
+    localStorage.setItem(VERSION_CACHE_KEY, String(now));
 
     setAllProducts(products);
     setLoading(false);

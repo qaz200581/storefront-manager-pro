@@ -15,7 +15,7 @@ interface StoreUsersListProps {
 }
 
 const roleLabels: Record<StoreRole, string> = {
-  owner: '店長',
+  store_manager: '店長',
   manager: '經理',
   employee: '員工',
 };

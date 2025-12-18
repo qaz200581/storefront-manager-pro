@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button, ButtonProps } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -9,14 +9,15 @@ import StoresList from './StoreForm/StoresList';
 import StoreForm from './StoreForm/StoreForm';
 import StoreUsersList from './StoreUserForm/StoreUsersList';
 import StoreUserForm from './StoreUserForm/StoreUserForm';
-import { Store, StoreUser, StoreFormData, StoreUserFormData } from './types';
+import { Store, StoreUser, StoreFormData, StoreUserFormData, StoreRole } from './types';
 import { useUserRole } from '@/hooks/useUserRole';
 import type { StoreWithRole } from './types';
+
 type ViewMode = 'list' | 'add-store' | 'edit-store' | 'users' | 'add-user' | 'edit-user';
 
 export default function StoresTab() {
     const { user } = useAuth();
-    const { isAdmin, isManager } = useUserRole();
+    const { isAdmin, isManager, isStoreManager, getStoreRole } = useUserRole();
 
     const [stores, setStores] = useState<StoreWithRole[]>([]);
     const [storeUsers, setStoreUsers] = useState<StoreUser[]>([]);
@@ -267,13 +268,32 @@ export default function StoresTab() {
         setViewMode('users');
     };
 
+    // 權限檢查：只有 admin 和 manager 可以新增店家
+    const canAddStore = isAdmin || isManager;
+    
+    // 權限檢查：根據店家角色決定是否可以編輯
+    const canEditStore = (store: StoreWithRole) => {
+        if (isAdmin) return true;
+        if (isManager && store.user_role) return true;
+        if (store.user_role === 'store_manager') return true;
+        return false;
+    };
+    
+    // 權限檢查：根據店家角色決定是否可以管理用戶
+    const canManageUsers = (store: StoreWithRole) => {
+        if (isAdmin) return true;
+        if (isManager && store.user_role) return true;
+        if (store.user_role === 'store_manager') return true;
+        return false;
+    };
+
     return (
         <div className="space-y-4">
             {viewMode === 'list' && (
                 <>
                     <div className="flex justify-between items-center">
                         <h2 className="text-lg font-semibold">店家管理</h2>
-                        {(isAdmin || isManager) && (
+                        {canAddStore && (
                             <Button onClick={handleAddStore}>
                                 <Plus className="w-4 h-4 mr-2" />
                                 新增店家
