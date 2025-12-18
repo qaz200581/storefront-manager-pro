@@ -17,7 +17,7 @@ export default function StoreDashboard() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [orderNotes, setOrderNotes] = useState('');
-  const [profile, setProfile] = useState<Profile>({ store_name: null });
+  const [profile, setProfile] = useState<Profile>({ user_name: null });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export default function StoreDashboard() {
 
     const { data } = await supabase
       .from('profiles')
-      .select('store_name')
+      .select('user_name')
       .eq('id', user.id)
       .maybeSingle();
 
@@ -164,7 +164,7 @@ export default function StoreDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <StoreHeader storeName={profile.store_name} onSignOut={signOut} />
+      <StoreHeader storeName={profile.user_name} onSignOut={signOut} />
 
       <main className="container mx-auto px-4 py-6">
         <Tabs defaultValue="products" className="space-y-4">

@@ -17,6 +17,7 @@ interface StoreUserFormProps {
 export default function StoreUserForm({ storeUser, storeName, onSubmit, onCancel, isLoading }: StoreUserFormProps) {
   const [formData, setFormData] = useState<StoreUserFormData>({
     email: '',
+    user_name: '',
     role: 'employee',
     status: '啟用',
   });
@@ -25,6 +26,7 @@ export default function StoreUserForm({ storeUser, storeName, onSubmit, onCancel
     if (storeUser) {
       setFormData({
         email: storeUser.profile?.email || '',
+        user_name: storeUser.profile?.user_name || '',
         role: storeUser.role,
         status: storeUser.status,
       });

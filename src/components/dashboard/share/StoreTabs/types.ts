@@ -30,13 +30,14 @@ export interface StoreUser {
   created_at: string;
   profile?: {
     email: string;
-    store_name: string | null;
+    user_name: string | null;
   };
 }
 
 export interface StoreFormData {
   name: string;
   parent_store_id: string;
+  
   address: string;
   phone: string;
   status: string;
@@ -44,6 +45,7 @@ export interface StoreFormData {
 
 export interface StoreUserFormData {
   email: string;
+  user_name: string;
   role: StoreRole;
   status: string;
 }

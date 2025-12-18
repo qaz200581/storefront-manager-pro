@@ -49,14 +49,14 @@ export default function AdminDashboard() {
     const userIds = [...new Set(fetchedOrders?.map(o => o.user_id) || [])] as string[];
     const { data: profilesData } = await supabase
       .from('profiles')
-      .select('id, store_name, email')
+      .select('id, user_name, email')
       .in('id', userIds);
 
     const profilesMap = new Map(profilesData?.map(p => [p.id, p]) || []);
 
     const ordersWithProfiles = (fetchedOrders || []).map(order => ({
       ...order,
-      profiles: profilesMap.get(order.user_id) || { store_name: null, email: '' }
+      profiles: profilesMap.get(order.user_id) || { user_name: null, email: '' }
     }));
 
     setOrders(ordersWithProfiles);

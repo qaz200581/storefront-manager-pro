@@ -42,5 +42,5 @@ export interface Order {
 }
 
 export interface Profile {
-  store_name: string | null;
+  user_name: string | null;
 }

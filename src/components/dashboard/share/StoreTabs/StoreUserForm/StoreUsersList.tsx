@@ -20,13 +20,13 @@ const roleLabels: Record<StoreRole, string> = {
   employee: '員工',
 };
 
-export default function StoreUsersList({ 
-  store, 
-  users, 
-  onBack, 
-  onAddUser, 
-  onEditUser, 
-  isLoading 
+export default function StoreUsersList({
+  store,
+  users,
+  onBack,
+  onAddUser,
+  onEditUser,
+  isLoading
 }: StoreUsersListProps) {
   if (isLoading) {
     return (
@@ -64,8 +64,9 @@ export default function StoreUsersList({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Email</TableHead>
+
                 <TableHead>名稱</TableHead>
+                <TableHead>Email</TableHead>
                 <TableHead>角色</TableHead>
                 <TableHead>狀態</TableHead>
                 <TableHead className="text-right">操作</TableHead>
@@ -74,8 +75,8 @@ export default function StoreUsersList({
             <TableBody>
               {users.map((user) => (
                 <TableRow key={user.id}>
+                  <TableCell>{user.profile?.user_name || '-'}</TableCell>
                   <TableCell>{user.profile?.email || '-'}</TableCell>
-                  <TableCell>{user.profile?.store_name || '-'}</TableCell>
                   <TableCell>
                     <Badge variant="outline">
                       {roleLabels[user.role]}

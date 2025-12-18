@@ -71,7 +71,7 @@ export default function OrdersTab({ orders, onUpdateStatus }: OrdersTabProps) {
                     <TableCell>
                       <div>
                         <p className="font-medium">
-                          {order.profiles?.store_name || '未命名店家'}
+                          {order.profiles?.user_name || '未命名用戶'}
                         </p>
                         <p className="text-xs text-muted-foreground">
                           {order.profiles?.email}

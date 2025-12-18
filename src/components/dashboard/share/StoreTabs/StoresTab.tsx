@@ -73,7 +73,7 @@ export default function StoresTab() {
             if (userIds.length > 0) {
                 const { data: profiles } = await supabase
                     .from('profiles')
-                    .select('id, email, store_name')
+                    .select('id, email, user_name')
                     .in('id', userIds);
 
                 const profilesMap = new Map(profiles?.map(p => [p.id, p]) || []);
@@ -160,12 +160,14 @@ export default function StoresTab() {
 
     const handleSubmitUser = async (data: StoreUserFormData) => {
         if (!selectedStore) return;
-        console.log('提交資料 user data:', data);
         setIsSubmitting(true);
+
         try {
             if (selectedUser) {
-                // Update existing user
-                const { error } = await supabase
+                // --- 1. 更新現有用戶 ---
+
+                // A. 更新 store_users 表 (角色與狀態)
+                const { error: userError } = await supabase
                     .from('store_users')
                     .update({
                         role: data.role,
@@ -173,16 +175,33 @@ export default function StoresTab() {
                     })
                     .eq('id', selectedUser.id);
 
-                if (error) throw error;
-                toast.success('用戶已更新');
+                if (userError) throw userError;
+
+                // B. 更新 profiles 表 (員工名稱)
+                // 注意：這取決於你的 RLS 政策是否允許管理者修改他人的 profile
+                const { error: profileError } = await supabase
+                    .from('profiles')
+                    .update({
+                        user_name: data.user_name, // 這裡同步更新 user_name
+                    })
+                    .eq('id', selectedUser.user_id);
+
+                if (profileError) {
+                    console.warn('Profile 名稱更新失敗，可能是權限不足:', profileError);
+                    // 這裡可以選擇報錯或僅給予警告
+                }
+
+                toast.success('用戶資料已更新');
             } else {
-                // Find user by email
+                // --- 2. 新增用戶 ---
+
+                // A. 先透過 Email 尋找用戶 Profile
                 const { data: profile, error: profileError } = await supabase
                     .from('profiles')
                     .select('id')
                     .ilike('email', data.email.trim())
                     .maybeSingle();
-                console.log(profileError)
+
                 if (profileError) throw profileError;
                 if (!profile) {
                     toast.error('找不到此 Email 的用戶，請確認用戶已註冊');
@@ -190,7 +209,7 @@ export default function StoresTab() {
                     return;
                 }
 
-                // Check if user already exists in store
+                // B. 檢查用戶是否已在該店
                 const { data: existing } = await supabase
                     .from('store_users')
                     .select('id')
@@ -204,8 +223,8 @@ export default function StoresTab() {
                     return;
                 }
 
-                // Add new user
-                const { error } = await supabase
+                // C. 加入 store_users 關聯
+                const { error: insertError } = await supabase
                     .from('store_users')
                     .insert({
                         store_id: selectedStore.id,
@@ -214,8 +233,17 @@ export default function StoresTab() {
                         status: data.status,
                     });
 
-                if (error) throw error;
-                toast.success('用戶已新增');
+                if (insertError) throw insertError;
+
+                // D. (選填) 新增時是否也要同步更新他的 user_name?
+                if (data.user_name) {
+                    await supabase
+                        .from('profiles')
+                        .update({ user_name: data.user_name })
+                        .eq('id', profile.id);
+                }
+
+                toast.success('用戶已新增至店家');
             }
 
             fetchStoreUsers(selectedStore.id);
