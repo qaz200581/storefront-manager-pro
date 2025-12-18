@@ -39,8 +39,7 @@ export default function StoreUserForm({ storeUser, storeName, onSubmit, onCancel
   };
 
   const roleOptions: { value: StoreRole; label: string }[] = [
-    { value: 'owner', label: '店長' },
-    { value: 'manager', label: '經理' },
+    { value: 'store_manager', label: '店長' },
     { value: 'employee', label: '員工' },
   ];
 

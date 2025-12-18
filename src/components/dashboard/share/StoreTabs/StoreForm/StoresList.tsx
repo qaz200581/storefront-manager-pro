@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Building2, Edit, Users } from 'lucide-react';
 import { StoreWithRole } from '../types';
-
+import { useUserRole } from '@/hooks/useUserRole';
 
 interface StoresListProps {
   stores: StoreWithRole[];
@@ -15,6 +15,23 @@ interface StoresListProps {
 }
 
 export default function StoresList({ stores, onEdit, onManageUsers, isLoading, isAdmin }: StoresListProps) {
+  const { isManager, getStoreRole } = useUserRole();
+  
+  // 權限檢查：是否可以編輯店家
+  const canEditStore = (store: StoreWithRole) => {
+    if (isAdmin) return true;
+    if (isManager && store.user_role) return true;
+    if (store.user_role === 'store_manager') return true;
+    return false;
+  };
+  
+  // 權限檢查：是否可以管理用戶
+  const canManageUsers = (store: StoreWithRole) => {
+    if (isAdmin) return true;
+    if (isManager && store.user_role) return true;
+    if (store.user_role === 'store_manager') return true;
+    return false;
+  };
   const getParentName = (parentId: string | null) => {
     if (!parentId) return '-';
     const parent = stores.find(s => s.id === parentId);
@@ -73,7 +90,7 @@ export default function StoresList({ stores, onEdit, onManageUsers, isLoading, i
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex gap-2 justify-end">
-                    {(isAdmin || store.user_role === 'owner') && (
+                    {canEditStore(store) && (
                       <Button
                         variant="ghost"
                         size="sm"
@@ -83,7 +100,7 @@ export default function StoresList({ stores, onEdit, onManageUsers, isLoading, i
                         <Edit className="w-4 h-4" />
                       </Button>
                     )}
-                    {(isAdmin || store.user_role === 'owner' || store.user_role === 'manager') && (
+                    {canManageUsers(store) && (
                       <Button
                         variant="ghost"
                         size="sm"

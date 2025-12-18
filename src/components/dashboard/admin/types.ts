@@ -1,3 +1,7 @@
+import { Product, TableSetting } from '@/components/dashboard/share/types';
+
+// Re-export Product for backward compatibility
+export type { Product } from '@/components/dashboard/share/types';
 
 export interface Order {
   id: string;
@@ -34,10 +38,5 @@ export interface ProductFormData {
   category: string;
   barcode: string;
   parent_product_id: string;
-  table_settings?: {
-    id: string;
-    table_title: string;
-    table_row_title: string;
-    table_col_title: string;
-  }[] | null;
+  table_settings?: TableSetting[] | null;
 }
