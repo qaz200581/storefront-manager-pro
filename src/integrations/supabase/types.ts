@@ -14,21 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      app_metadata: {
-        Row: {
-          key: string
-          last_updated_at: string
-        }
-        Insert: {
-          key: string
-          last_updated_at?: string
-        }
-        Update: {
-          key?: string
-          last_updated_at?: string
-        }
-        Relationships: []
-      }
       order_items: {
         Row: {
           id: string
@@ -117,68 +102,62 @@ export type Database = {
       }
       products: {
         Row: {
-          barcode: string | null
-          brand: string | null
           category: string | null
-          color: string | null
           created_at: string
           dealer_price: number | null
           description: string | null
           id: string
           image_url: string | null
-          model: string | null
+          is_active: boolean
           name: string
           parent_product_id: string | null
           price: number
           retail_price: number | null
-          series: string | null
-          status: Database["public"]["Enums"]["ProductSatus"]
+          status: string
           stock: number
-          table_settings: Json | null
+          table_col_title: string | null
+          table_row_title: string | null
+          table_title: string | null
           unit: string
           updated_at: string
         }
         Insert: {
-          barcode?: string | null
-          brand?: string | null
           category?: string | null
-          color?: string | null
           created_at?: string
           dealer_price?: number | null
           description?: string | null
           id?: string
           image_url?: string | null
-          model?: string | null
+          is_active?: boolean
           name: string
           parent_product_id?: string | null
           price: number
           retail_price?: number | null
-          series?: string | null
-          status?: Database["public"]["Enums"]["ProductSatus"]
+          status?: string
           stock?: number
-          table_settings?: Json | null
+          table_col_title?: string | null
+          table_row_title?: string | null
+          table_title?: string | null
           unit?: string
           updated_at?: string
         }
         Update: {
-          barcode?: string | null
-          brand?: string | null
           category?: string | null
-          color?: string | null
           created_at?: string
           dealer_price?: number | null
           description?: string | null
           id?: string
           image_url?: string | null
-          model?: string | null
+          is_active?: boolean
           name?: string
           parent_product_id?: string | null
           price?: number
           retail_price?: number | null
-          series?: string | null
-          status?: Database["public"]["Enums"]["ProductSatus"]
+          status?: string
           stock?: number
-          table_settings?: Json | null
+          table_col_title?: string | null
+          table_row_title?: string | null
+          table_title?: string | null
           unit?: string
           updated_at?: string
         }
@@ -199,7 +178,7 @@ export type Database = {
           email: string
           id: string
           phone: string | null
-          user_name: string | null
+          store_name: string | null
           updated_at: string
         }
         Insert: {
@@ -208,7 +187,7 @@ export type Database = {
           email: string
           id: string
           phone?: string | null
-          user_name?: string | null
+          store_name?: string | null
           updated_at?: string
         }
         Update: {
@@ -217,7 +196,7 @@ export type Database = {
           email?: string
           id?: string
           phone?: string | null
-          user_name?: string | null
+          store_name?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -325,20 +304,6 @@ export type Database = {
         Args: { _user_id: string }
         Returns: string[]
       }
-      get_user_stores_with_roles: {
-        Args: { p_user_id: string }
-        Returns: {
-          address: string
-          created_at: string
-          id: string
-          name: string
-          parent_store_id: string
-          phone: string
-          status: string
-          updated_at: string
-          user_role: Database["public"]["Enums"]["store_role"]
-        }[]
-      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -357,7 +322,6 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "store"
-      ProductSatus: "上架中" | "售完停產" | "預購中" | "停產"
       store_role: "owner" | "manager" | "employee"
     }
     CompositeTypes: {
@@ -487,7 +451,6 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "store"],
-      ProductSatus: ["上架中", "售完停產", "預購中", "停產"],
       store_role: ["owner", "manager", "employee"],
     },
   },
