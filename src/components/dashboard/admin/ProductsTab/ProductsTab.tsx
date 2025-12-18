@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import ProductForm from "./ProductsForm/ProductsForm";
 import ProductList from "./ProductsList/ProductList";
-import {  ProductFormData } from "@/components/dashboard/admin/types";
+import { ProductFormData } from "@/components/dashboard/admin/types";
 import { Product } from "@/components/dashboard/share/types";
 const initialProductForm: ProductFormData = {
   name: "",
@@ -24,9 +24,15 @@ const initialProductForm: ProductFormData = {
   parent_product_id: "",
   table_settings: [],
 };
-
+import { useProductFetcher } from "@/components/dashboard/share/useProductFetcher";
 export default function ProductsTab() {
   const [products, setProducts] = useState<Product[]>([]);
+  const {
+    products: fetchedProducts,
+    isLoading: loading,
+    search,
+    setSearch,
+  } = useProductFetcher(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [productForm, setProductForm] = useState<ProductFormData>(initialProductForm);

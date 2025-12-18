@@ -20,7 +20,9 @@ export function useProductFetcher(isOpen: boolean) {
     const cachedTimestamp = localStorage.getItem(VERSION_CACHE_KEY);
     const now = Date.now();
     const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-
+    console.log("記憶體時間戳",cachedTimestamp)
+    console.log("時間戳產品",cachedProducts)
+    
     // Use cache if valid
     if (cachedProducts && cachedTimestamp && (now - parseInt(cachedTimestamp)) < CACHE_TTL) {
       setAllProducts(JSON.parse(cachedProducts) as Product[]);
@@ -42,7 +44,7 @@ export function useProductFetcher(isOpen: boolean) {
     }
 
     const products = (data as unknown) as Product[];
-
+    console.log("fetch 獲得的產品", products);
     localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(products));
     localStorage.setItem(VERSION_CACHE_KEY, String(now));
 

@@ -130,7 +130,7 @@ export default function StoreDashboard() {
         status: 'pending',
       })
       .select()
-      .single();
+      .maybeSingle();
 
     if (orderError) {
       toast.error('建立訂單失敗');

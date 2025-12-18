@@ -21,7 +21,7 @@ export default function ProductSelectorSidebar({ isOpen, onClose, onSelectProduc
     isLoading: loading,
     search,
     setSearch,
-  } = useProductFetcher(isOpen);
+  } = useProductFetcher(true);
 
   // 顯示模式
   const [viewMode, setViewMode] = useState<ViewMode>("grid");

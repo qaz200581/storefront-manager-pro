@@ -58,7 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .from('profiles')
         .select('*')
         .eq('id', baseUser.id)
-        .single(),
+        .maybeSingle(),
 
       supabase
         .from('store_users')
